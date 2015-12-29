@@ -24,5 +24,15 @@ namespace BOLD
         {
             InitializeComponent();
         }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void Open_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
