@@ -100,9 +100,20 @@ namespace BOLD
 
         private void fileName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_numSlice > _image_data[fileNameBox.SelectedIndex].zSize)
+                NumValue = _numSlice = _image_data[fileNameBox.SelectedIndex].zSize;
+            else
+                image.Source = _image_data[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
 
+        }
+
+        private void resize_Checked(object sender, RoutedEventArgs e)
+        {
+            image.Source = new CroppedBitmap(image.Source as BitmapSource, _image_data[fileNameBox.SelectedIndex].selection);
+        }
+        private void resize_UnChecked(object sender, RoutedEventArgs e)
+        {
             image.Source = _image_data[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
-
         }
     }
 

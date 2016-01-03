@@ -1,27 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Drawing;
 using System.Windows.Media;
+using System.Windows;
 
 namespace BOLD
 {
     class ImageSlice
     {
-        public int xSize { get; set; }
-        public int ySize { get; set;  }
-        public int zSize { get; set; }
+        public int xSize { get; private set; }
+        public int ySize { get; private set; }
+        public int zSize { get; private set; }
         //private int xSize, ySize, zSize;
         private double xRealSize, yRealSize, zRealSize;
         private string realType;
         private string sliceName;
         private int[, ,] sliceData;
         private int minIntensity, maxIntensity;
+        public Int32Rect selection { get; private set; }
+
         public ImageSlice(string filePath)
         {
             string header="", data="";
@@ -88,6 +86,27 @@ namespace BOLD
                 if (word != 0 && minIntensity > word)
                     minIntensity = word;
             }
+
+            // initialize selection
+            selection = new Int32Rect();
+            int minX, maxX, minY, maxY;
+            minX = xSize; maxX = 0; minY = ySize; maxY = 0;
+            for (int i=0;i<xSize;i++)
+                for (int j=0;j<ySize;j++)
+                {
+                    if (sliceData[i, j, 0] != 0)
+                    {
+                        if (minX > i)
+                            minX = i;
+                        if (maxX < i)
+                            maxX = i;
+                        if (minY > j)
+                            minY = j;
+                        if (maxY < j)
+                            maxY = j;
+                    }
+                }
+            selection = new Int32Rect(minY, minX, maxY - minY, maxX - minX);
 
         }
         public BitmapSource GetImage(int i_slice)
