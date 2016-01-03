@@ -21,10 +21,13 @@
         </Menu>
         <Image Margin="20,57,50,50" Name="image" />
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0" VerticalAlignment="Top">
-            <TextBox x:Name="txtNum" x:FieldModifier="private" Margin="5,5,0,5" Width="30" Text="0" TextChanged="txtNum_TextChanged" />
+            <Label x:Name="countername" x:FieldModifier="private" Margin="5,5,0,5" Content="slice:" />
+            <TextBox x:Name="txtNum" x:FieldModifier="private" Margin="0,5,0,5" Width="30" Text="0" TextChanged="txtNum_TextChanged" />
             <Button x:Name="cmdUp" x:FieldModifier="private" Margin="5,5,0,5" Content="˄" Width="20" Click="cmdUp_Click" />
             <Button x:Name="cmdDown" x:FieldModifier="private" Margin="0,5,0,5"  Content="˅" Width="20" Click="cmdDown_Click" />
+            <ComboBox x:Name="fileNameBox" x:FieldModifier="private" Margin="5,5,0,5" Width="100" SelectionChanged="fileName_SelectionChanged"/>
         </StackPanel>
+        
     </Grid>
 
 </Window>

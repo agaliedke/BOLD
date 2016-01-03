@@ -1,18 +1,11 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
 
 namespace BOLD
 {
@@ -24,7 +17,7 @@ namespace BOLD
         public MainWindow()
         {
             InitializeComponent();
-            txtNum.Text = _numValue.ToString();
+            txtNum.Text = _numSlice.ToString();
         }
         // Menu items controlers
         private void Exit_Click(object sender, RoutedEventArgs e)
@@ -36,33 +29,46 @@ namespace BOLD
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
-                image.Source = new BitmapImage(new Uri(openFileDialog.FileName));
-            _images.Add(image.Source);
-            NumValue++;
+            {
+                ImageSlice slice = new ImageSlice(openFileDialog.FileName);
+                _numSlice = 1;
+                image.Source = slice.GetImage(_numSlice - 1);
+                txtNum.Text = _numSlice.ToString();
+
+                //_images.Add(image.Source);
+                _image_data.Add(slice);
+
+                ComboboxItem item = new ComboboxItem();
+                item.Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
+                item.Value = _numImage++;
+                fileNameBox.Items.Add(item);
+                fileNameBox.SelectedIndex = _numImage - 1;
+
+            }
+
         }
         // List of images
-        private List<ImageSource> _images = new List<ImageSource>();
-        // controlers for image changer
-        private int _numValue = 0;
-
+        private List<ImageSlice> _image_data = new List<ImageSlice>();
+        // controlers for image slice changer
+        private int _numSlice = 0;
+        private int _numImage = 0;
         public int NumValue
         {
-            get { return _numValue; }
+            get { return _numSlice; }
             set
             {
-                if (value < 0 && _images.Count==0)
-                    _numValue = 0;
-                else if (value < 1 && _images.Count>0)
-                    _numValue = 1;
-                else if (value > _images.Count)
-                    _numValue = _images.Count;
+                if (_image_data.Count == 0)
+                    return;
+                if (value < 1 )
+                    _numSlice = 1;
+                else if (value > _image_data[fileNameBox.SelectedIndex].zSize)
+                    _numSlice = _image_data[fileNameBox.SelectedIndex].zSize;
                 else
-                    _numValue = value;
-                txtNum.Text = _numValue.ToString();
-                if (_images.Count > 0)
+                    _numSlice = value;
+                txtNum.Text = _numSlice.ToString();
+                if (_image_data.Count > 0)
                 {
-                    image.Source = _images[_numValue - 1];
-                   
+                    image.Source = _image_data[fileNameBox.SelectedIndex].GetImage(_numSlice-1);
                 }
             }
         }
@@ -84,14 +90,19 @@ namespace BOLD
                 return;
             }
 
-            if (!int.TryParse(txtNum.Text, out _numValue))
+            if (int.TryParse(txtNum.Text, out _numSlice))
             {
-                if (_numValue < 0)
-                    _numValue = 0;
-                else if (_numValue > _images.Count)
-                    _numValue = _images.Count;
-                txtNum.Text = _numValue.ToString();
+                NumValue = _numSlice;
             }
+
+
+        }
+
+        private void fileName_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            image.Source = _image_data[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
+
         }
     }
 
