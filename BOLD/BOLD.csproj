@@ -93,6 +93,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Slices\Air_kwadrat_multislice.txt" />
+    <Resource Include="Slices\Air_kwadrat_singleslice.txt" />
+    <Resource Include="Slices\O2_kwadrat_multislice.txt" />
+    <Resource Include="Slices\O2_kwadrat_singleslice.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
