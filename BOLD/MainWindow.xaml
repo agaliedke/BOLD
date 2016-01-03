@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Name="window" mc:Ignorable="d" x:Class="BOLD.MainWindow"
-        Title="BOLD" Height="350" Width="345"
+        Title="BOLD" Height="350" Width="350" MinWidth="350" MinHeight="350"
         >
 
     <Grid>
@@ -20,9 +20,10 @@
                 
             </MenuItem>
         </Menu>
-        <Canvas x:Name="canv" Margin="20,57,50,50">
-            <Image Name="image" Width="{Binding ElementName=canv, Path=ActualHeight}" Height="{Binding ElementName=canv, Path=ActualHeight}"/>
-        </Canvas>
+        <StackPanel x:Name="canv" Margin="20,57,50,50" Orientation="Horizontal">
+            <Image Name="image" Width="{Binding ElementName=canv, Path=ActualHeight}" Height="{Binding ElementName=canv, Path=ActualHeight}" HorizontalAlignment="Left"/>
+            <Button x:Name="difference" VerticalAlignment="Top" Width="40" Content="Diff" Margin="5,0,0,0" Click="difference_Click" />
+        </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0" VerticalAlignment="Top">
             <Label x:Name="countername" x:FieldModifier="private" Margin="5,5,0,5" Content="slice:" />
             <TextBox x:Name="txtNum" x:FieldModifier="private" Margin="0,5,0,5" Width="30" Text="0" TextChanged="txtNum_TextChanged" />

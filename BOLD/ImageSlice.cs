@@ -4,6 +4,8 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace BOLD
 {
@@ -16,7 +18,7 @@ namespace BOLD
         private double xRealSize, yRealSize, zRealSize;
         private string realType;
         private string sliceName;
-        private int[, ,] sliceData;
+        public int[, ,] sliceData { get; private set; }
         private int minIntensity, maxIntensity;
         public Int32Rect selection { get; private set; }
 
@@ -124,5 +126,29 @@ namespace BOLD
             BitmapSource bmpSource = BitmapSource.Create(xSize, ySize, 96, 96, PixelFormats.Gray8, null, pixelData, xSize);
             return bmpSource;
         }
+        public static ImageSlice operator +(ImageSlice c1, ImageSlice c2)
+        {
+            if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
+                throw new ArgumentOutOfRangeException("operator +: all sizes have to be the same");
+            ImageSlice c = c1;
+            for (int i = 0; i < c.xSize; i++)
+                for (int j = 0; j < c.ySize; j++)
+                    for (int k = 0; k < c.zSize; k++)
+                        c.sliceData[i, j, k] += c2.sliceData[i, j, k];
+            return c;
+        }
+        public static ImageSlice operator -(ImageSlice c1, ImageSlice c2)
+        {
+            if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
+                throw new ArgumentOutOfRangeException("operator +: all sizes have to be the same");
+            
+            ImageSlice c = (ImageSlice)c1.MemberwiseClone();
+            for (int i = 0; i < c.xSize; i++)
+                for (int j = 0; j < c.ySize; j++)
+                    for (int k = 0; k < c.zSize; k++)
+                        c.sliceData[i, j, k] -= c2.sliceData[i, j, k];
+            return c;
+        }
+
     }
 }

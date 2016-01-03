@@ -1,9 +1,7 @@
 ﻿using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.IO;
 
@@ -128,8 +126,7 @@ namespace BOLD
                 NumSlice = _numSlice = _imageData[fileNameBox.SelectedIndex].zSize;
             else
                 NumSlice = _numSlice;
-                //image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
-
+                
         }
 
         private void resize_Checked(object sender, RoutedEventArgs e)
@@ -139,6 +136,11 @@ namespace BOLD
         private void resize_UnChecked(object sender, RoutedEventArgs e)
         {
             CheckedResize = false;
+        }
+
+        private void difference_Click(object sender, RoutedEventArgs e)
+        {
+            image.Source = (_imageData[0] - _imageData[1]).GetImage(_numSlice-1);
         }
     }
 
