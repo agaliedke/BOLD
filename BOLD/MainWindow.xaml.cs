@@ -23,6 +23,23 @@ namespace BOLD
         {
             Close();
         }
+        private void AddImage(ImageSlice slice, string sliceName)
+        {
+            // insert new data image
+            slice.sliceFileName = sliceName; 
+            _imageData.Add(slice);
+
+            // update combobox
+            ComboboxItem item = new ComboboxItem();
+            item.Text = sliceName;
+            item.Value = _numImage;
+            fileNameBox.Items.Add(item);
+            fileNameBox.SelectedIndex = _numImage;
+            _numImage++;
+
+            // update Image
+            NumSlice = _numSlice;
+        }
 
         private void Add_Click(object sender, RoutedEventArgs e)
         {
@@ -36,19 +53,14 @@ namespace BOLD
                 // update text field
                 txtNum.Text = _numSlice.ToString();
 
-                // insert new data image
-                _imageData.Add(slice);
+                AddImage(slice, Path.GetFileNameWithoutExtension(openFileDialog.FileName));
 
-                // update combobox
-                ComboboxItem item = new ComboboxItem();
-                item.Text = Path.GetFileNameWithoutExtension(openFileDialog.FileName);
-                item.Value = _numImage++;
-                fileNameBox.Items.Add(item);
-                fileNameBox.SelectedIndex = _numImage - 1;
-
-                // update Image
-                NumSlice = _numSlice;
-
+                // Activate difference button if at least 2 images are added
+                if (_imageData.Count >= 2)
+                {
+                    difference.IsEnabled = true;
+                    sum.IsEnabled = true;
+                }
             }
 
         }
@@ -141,7 +153,13 @@ namespace BOLD
 
         private void difference_Click(object sender, RoutedEventArgs e)
         {
-            image.Source = (_imageData[0] - _imageData[1]).GetImage(_numSlice-1);
+            ImageSlice slice = _imageData[0] - _imageData[1];
+            AddImage(slice, slice.sliceFileName);
+        }
+        private void sum_Click(object sender, RoutedEventArgs e)
+        {
+            ImageSlice slice = _imageData[0] + _imageData[1];
+            AddImage(slice, slice.sliceFileName);
         }
     }
 

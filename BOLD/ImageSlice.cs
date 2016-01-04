@@ -4,11 +4,10 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Runtime.Serialization;
 
 namespace BOLD
 {
+    [Serializable]
     class ImageSlice
     {
         public int xSize { get; private set; }
@@ -17,7 +16,8 @@ namespace BOLD
         //private int xSize, ySize, zSize;
         private double xRealSize, yRealSize, zRealSize;
         private string realType;
-        private string sliceName;
+        public string sliceName { get; private set; }
+        public string sliceFileName { get; set; }
         public int[, ,] sliceData { get; private set; }
         private int minIntensity, maxIntensity;
         public Int32Rect selection { get; private set; }
@@ -42,12 +42,12 @@ namespace BOLD
             }
             catch (Exception e)
             {
-                Console.WriteLine("The file could not be read:");
-                Console.WriteLine(e.Message);
+                MessageBox.Show("The file could not be read: " + e.Message, "ImageSlice", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
             // reading the header
             if (words.Count() == 0)
-                throw new ArgumentException("ImageSlice: Header data not found");
+                throw new ArgumentException("ImageSlice", "Header data not found");
             for (int i = 0; i < words.Count(); i++)
             {
                 if (words[i]=="#")
@@ -73,7 +73,7 @@ namespace BOLD
             }
             words = data.Split(new[] { ' ', ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (words.Count() == 0)
-                throw new ArgumentException("ImageSlice: Image data not found");
+                throw new ArgumentException("ImageSlice", "Image data not found");
             // reading the contrast data
             sliceData = new int[xSize, ySize, zSize];
             maxIntensity = 0;
@@ -130,7 +130,8 @@ namespace BOLD
         {
             if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
                 throw new ArgumentOutOfRangeException("operator +: all sizes have to be the same");
-            ImageSlice c = c1;
+            ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
+            c.sliceFileName = c1.sliceFileName + "+" + c2.sliceFileName;
             for (int i = 0; i < c.xSize; i++)
                 for (int j = 0; j < c.ySize; j++)
                     for (int k = 0; k < c.zSize; k++)
@@ -141,14 +142,15 @@ namespace BOLD
         {
             if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
                 throw new ArgumentOutOfRangeException("operator -", "all sizes have to be the same");
-            
-            ImageSlice c = (ImageSlice)c1.MemberwiseClone();
+
+            ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
+            c.sliceFileName = c1.sliceFileName + "-" + c2.sliceFileName;
             for (int i = 0; i < c.xSize; i++)
                 for (int j = 0; j < c.ySize; j++)
                     for (int k = 0; k < c.zSize; k++)
                         c.sliceData[i, j, k] -= c2.sliceData[i, j, k];
             return c;
         }
-
+ 
     }
 }

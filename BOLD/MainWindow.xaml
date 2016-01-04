@@ -24,7 +24,10 @@
         </Menu>
         <StackPanel x:Name="canv" Margin="20,57,50,50" Orientation="Horizontal">
             <Image Name="image" Width="{Binding ElementName=canv, Path=ActualHeight}" Height="{Binding ElementName=canv, Path=ActualHeight}" HorizontalAlignment="Left"/>
-            <Button x:Name="difference" VerticalAlignment="Top" Width="40" Content="Diff" Margin="5,0,0,0" Click="difference_Click" />
+            <StackPanel Orientation="Vertical">
+                <Button x:Name="difference" VerticalAlignment="Top" Width="40" Content="Diff" Margin="5,0,0,0" Click="difference_Click" IsEnabled="False" />
+                <Button x:Name="sum" VerticalAlignment="Top" Width="40" Content="Sum" Margin="5,0,0,0" Click="sum_Click" IsEnabled="False" />
+            </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0" VerticalAlignment="Top">
             <Label x:Name="countername" x:FieldModifier="private" Margin="5,5,0,5" Content="slice:" />
