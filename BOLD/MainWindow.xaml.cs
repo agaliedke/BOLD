@@ -34,7 +34,7 @@ namespace BOLD
             item.Text = sliceName;
             item.Value = _numImage;
             fileNameBox.Items.Add(item);
-            fileNameBox.SelectedIndex = _numImage;
+            fileNameBox.SelectedIndex = fileNameBox.Items.Count-1;
             _numImage++;
 
             // update Image
@@ -135,6 +135,8 @@ namespace BOLD
 
         private void fileName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (fileNameBox.SelectedIndex == -1)
+                return;
             if (_numSlice > _imageData[fileNameBox.SelectedIndex].zSize)
                 NumSlice = _numSlice = _imageData[fileNameBox.SelectedIndex].zSize;
             else
@@ -160,6 +162,19 @@ namespace BOLD
         {
             ImageSlice slice = _imageData[0] + _imageData[1];
             AddImage(slice, slice.sliceFileName);
+        }
+
+        private void remove_Click(object sender, RoutedEventArgs e)
+        {
+            _imageData.RemoveAt(fileNameBox.SelectedIndex);
+            fileNameBox.Items.RemoveAt(fileNameBox.SelectedIndex);
+            image.Source = null;
+            if (_imageData.Count < 2)
+            {
+                difference.IsEnabled = false;
+                sum.IsEnabled = false;
+            }
+
         }
     }
 

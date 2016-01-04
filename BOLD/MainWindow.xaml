@@ -22,7 +22,7 @@
                 
             </MenuItem>
         </Menu>
-        <StackPanel x:Name="canv" Margin="20,57,50,50" Orientation="Horizontal">
+        <StackPanel x:Name="canv" Margin="20,57,20,50" Orientation="Horizontal">
             <Image Name="image" Width="{Binding ElementName=canv, Path=ActualHeight}" Height="{Binding ElementName=canv, Path=ActualHeight}" HorizontalAlignment="Left"/>
             <StackPanel Orientation="Vertical">
                 <Button x:Name="difference" VerticalAlignment="Top" Width="40" Content="Diff" Margin="5,0,0,0" Click="difference_Click" IsEnabled="False" />
@@ -37,6 +37,11 @@
             <ComboBox x:Name="fileNameBox" x:FieldModifier="private" Margin="5,5,0,5" Width="100" SelectionChanged="fileName_SelectionChanged"/>
             <Label x:Name="resizename" x:FieldModifier="private" Margin="5,5,0,5" Content="resize:" />
             <CheckBox x:Name="resize" Margin="0,13,0,5" Checked="resize_Checked" Unchecked="resize_UnChecked" />
+            <Button x:Name="remove" x:FieldModifier="private" Margin="5,5,0,5" Width="25" ToolTip="Delete current slice" Click="remove_Click">
+                <StackPanel>
+                    <Image Source="Pictures/delete.png" />
+                </StackPanel>
+            </Button>
         </StackPanel>
 
     </Grid>
