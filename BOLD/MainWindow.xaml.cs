@@ -26,7 +26,7 @@ namespace BOLD
         private void AddImage(ImageSlice slice, string sliceName)
         {
             // insert new data image
-            slice.sliceFileName = sliceName; 
+            slice.sliceFileName = sliceName;
             _imageData.Add(slice);
 
             // update combobox
@@ -34,8 +34,20 @@ namespace BOLD
             item.Text = sliceName;
             item.Value = _numImage;
             fileNameBox.Items.Add(item);
-            fileNameBox.SelectedIndex = fileNameBox.Items.Count-1;
+            fileNameBox.SelectedIndex = fileNameBox.Items.Count - 1;
             _numImage++;
+
+            // update Image
+            NumSlice = _numSlice;
+        }
+        private void ReplaceImage(ImageSlice slice, string sliceName)
+        {
+            // replace data image
+            slice.sliceFileName = sliceName;
+            _imageData[fileNameBox.SelectedIndex] = slice;
+
+            // update combobox
+            (fileNameBox.Items[fileNameBox.SelectedIndex] as ComboboxItem).Text = sliceName;
 
             // update Image
             NumSlice = _numSlice;
@@ -62,7 +74,22 @@ namespace BOLD
                     sum.IsEnabled = true;
                 }
             }
+        }
+        private void Replace_Click(object sender, RoutedEventArgs e)
+        {
+            if (fileNameBox.SelectedIndex == -1)
+                throw new System.Exception("No image selected, cannot replace!");
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                // load image from file
+                ImageSlice slice = new ImageSlice(openFileDialog.FileName);
+                _numSlice = 1;
+                // update text field
+                txtNum.Text = _numSlice.ToString();
 
+                ReplaceImage(slice, Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+            }
         }
         // List of images
         private List<ImageSlice> _imageData = new List<ImageSlice>();
@@ -166,6 +193,8 @@ namespace BOLD
 
         private void remove_Click(object sender, RoutedEventArgs e)
         {
+            if (fileNameBox.SelectedIndex == -1)
+                throw new System.Exception("No image selected, cannot remove!");
             _imageData.RemoveAt(fileNameBox.SelectedIndex);
             fileNameBox.Items.RemoveAt(fileNameBox.SelectedIndex);
             image.Source = null;
@@ -176,6 +205,17 @@ namespace BOLD
             }
 
         }
+        private void Save_As_Click(object sender, RoutedEventArgs e)
+        {
+            if (fileNameBox.SelectedIndex == -1)
+                throw new System.Exception("No image selected, cannot save!");
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                _imageData[fileNameBox.SelectedIndex].SaveImage(saveFileDialog.FileName);
+            }
+        }
+
     }
 
 }

@@ -13,10 +13,9 @@
                 <MenuItem Header="_New..." />
                 <Separator />
                 <MenuItem Header="_Add Image..." Click="Add_Click" />
-                <MenuItem Header="_Replace Image..."  />
+                <MenuItem Header="_Replace Image..." Click="Replace_Click" />
                 <Separator />
-                <MenuItem Header="_Save" />
-                <MenuItem Header="_Save As..." />
+                <MenuItem Header="_Save As..." Click="Save_As_Click"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="Exit_Click" />
                 

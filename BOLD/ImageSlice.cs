@@ -21,20 +21,22 @@ namespace BOLD
         public int[, ,] sliceData { get; private set; }
         private int minIntensity, maxIntensity;
         public Int32Rect selection { get; private set; }
+        public string header { get; private set; }
 
         public ImageSlice(string filePath)
         {
-            string header="", data="";
+            string data = "";
             string[] words = null;
+            header = "";
             try
             {   // Open the text file using a stream reader.
                 using (StreamReader reader = new StreamReader(filePath))
                 {
-                    data = reader.ReadLine() + " ";
+                    data = reader.ReadLine() + "\n";
                     while (data[0] == '#')
                     {
                         header += data;
-                        data = reader.ReadLine() + " ";
+                        data = reader.ReadLine() + "\n";
                     }
                     data += reader.ReadToEnd();
                     words = header.Split(new[] { ' ', ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -50,7 +52,7 @@ namespace BOLD
                 throw new ArgumentException("ImageSlice", "Header data not found");
             for (int i = 0; i < words.Count(); i++)
             {
-                if (words[i]=="#")
+                if (words[i] == "#")
                 {
                     if (words[i + 1] == "x_dimension:")
                         xSize = Int32.Parse(words[i + 2]);
@@ -78,7 +80,7 @@ namespace BOLD
             sliceData = new int[xSize, ySize, zSize];
             maxIntensity = 0;
             minIntensity = Int32.MaxValue;
-            
+
             for (int i = 0; i < words.Count(); i += 4)
             {
                 int word = Int32.Parse(words[i + 3]);
@@ -93,8 +95,8 @@ namespace BOLD
             selection = new Int32Rect();
             int minX, maxX, minY, maxY;
             minX = xSize; maxX = 0; minY = ySize; maxY = 0;
-            for (int i=0;i<xSize;i++)
-                for (int j=0;j<ySize;j++)
+            for (int i = 0; i < xSize; i++)
+                for (int j = 0; j < ySize; j++)
                 {
                     if (sliceData[i, j, 0] != 0)
                     {
@@ -118,13 +120,35 @@ namespace BOLD
             for (int i = 0; i < xSize; i++)
                 for (int j = 0; j < ySize; j++)
                 {
-                    byte color = sliceData[i, j, i_slice]==0?(byte)0:
-                        (byte)(Math.Round(sliceData[i, j, i_slice]-minIntensity/(double)(maxIntensity-minIntensity)*255.0));
+                    byte color = sliceData[i, j, i_slice] == 0 ? (byte)0 :
+                        (byte)(Math.Round(sliceData[i, j, i_slice] - minIntensity / (double)(maxIntensity - minIntensity) * 255.0));
                     pixelData[j + i * xSize] = color;
                 }
 
             BitmapSource bmpSource = BitmapSource.Create(xSize, ySize, 96, 96, PixelFormats.Gray8, null, pixelData, xSize);
             return bmpSource;
+        }
+        public void SaveImage(string filePath)
+        {
+            try
+            {   // Open the text file using a stream writer
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    writer.Write(header);
+                    for (int k = 0; k < zSize; k++)
+                        for (int j = 0; j < ySize; j++)
+                            for (int i = 0; i < xSize; i++)
+                            { 
+                                if (sliceData[i,j,k]>0)
+                                    writer.WriteLine(i.ToString() + " " + j.ToString() + " " + (k+1).ToString() + " " + sliceData[i, j, k].ToString());
+                            }
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("The file could not be write: " + e.Message, "SaveImage", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
         }
         public static ImageSlice operator +(ImageSlice c1, ImageSlice c2)
         {
@@ -151,6 +175,6 @@ namespace BOLD
                         c.sliceData[i, j, k] -= c2.sliceData[i, j, k];
             return c;
         }
- 
+
     }
 }
