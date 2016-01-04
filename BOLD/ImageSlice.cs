@@ -121,7 +121,7 @@ namespace BOLD
                 for (int j = 0; j < ySize; j++)
                 {
                     byte color = sliceData[i, j, i_slice] == 0 ? (byte)0 :
-                        (byte)(Math.Round(sliceData[i, j, i_slice] - minIntensity / (double)(maxIntensity - minIntensity) * 255.0));
+                        (byte)(Math.Round((sliceData[i, j, i_slice] - minIntensity) / (double)(maxIntensity - minIntensity) * 255.0));
                     pixelData[j + i * xSize] = color;
                 }
 
