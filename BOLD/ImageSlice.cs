@@ -140,7 +140,7 @@ namespace BOLD
         public static ImageSlice operator -(ImageSlice c1, ImageSlice c2)
         {
             if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
-                throw new ArgumentOutOfRangeException("operator +: all sizes have to be the same");
+                throw new ArgumentOutOfRangeException("operator -", "all sizes have to be the same");
             
             ImageSlice c = (ImageSlice)c1.MemberwiseClone();
             for (int i = 0; i < c.xSize; i++)
