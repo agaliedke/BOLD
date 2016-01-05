@@ -2,31 +2,76 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Name="window" mc:Ignorable="d" x:Class="BOLD.MainWindow"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Avalon="clr-namespace:Utils.Avalon" xmlns:local="clr-namespace:BOLD" xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="window" mc:Ignorable="d" x:Class="BOLD.MainWindow"
         
         Title="BOLD" Height="350" Width="350" MinWidth="350" MinHeight="350"
         >
+    <Window.Resources>
+        <local:MarginConverter x:Key="MarginConverter"/>
+    </Window.Resources>
+    <!--<Window.Resources>
+        <Avalon:JScriptConverter x:Key="JScriptConverter"/>
+    </Window.Resources>-->
 
     <Grid>
         <Menu VerticalAlignment="Top" >
             <MenuItem Header="_File"   >
-                <MenuItem Header="_New..." />
+                <MenuItem Header="_New..." Click="new_Click"/>
                 <Separator />
-                <MenuItem Header="_Add Image..." Click="Add_Click" />
-                <MenuItem Header="_Replace Image..." Click="Replace_Click" />
+                <MenuItem Header="_Add Image..." Click="add_Click" />
+                <MenuItem Header="_Replace Image..." Click="replace_Click" />
                 <Separator />
-                <MenuItem Header="_Save As..." Click="Save_As_Click"/>
+                <MenuItem Header="_Save As..." Click="save_As_Click"/>
                 <Separator />
-                <MenuItem Header="_Exit" Click="Exit_Click" />
-                
+                <MenuItem Header="_Exit" Click="exit_Click" />
+
             </MenuItem>
         </Menu>
         <StackPanel x:Name="canv" Margin="20,57,20,50" Orientation="Horizontal">
-            <Image Name="image" Width="{Binding ElementName=canv, Path=ActualHeight}" Height="{Binding ElementName=canv, Path=ActualHeight}" HorizontalAlignment="Left"/>
-            <StackPanel Orientation="Vertical">
-                <Button x:Name="difference" VerticalAlignment="Top" Width="40" Content="Diff" Margin="5,0,0,0" Click="difference_Click" IsEnabled="False" />
-                <Button x:Name="sum" VerticalAlignment="Top" Width="40" Content="Sum" Margin="5,0,0,0" Click="sum_Click" IsEnabled="False" />
-            </StackPanel>
+            <Image x:Name="image" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" RenderTransformOrigin="0.5,0.5" >
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                        <RotateTransform Angle="90"/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <DockPanel Margin="5,0,0,0" >
+                <GroupBox Header="Opierations" DockPanel.Dock="Top">
+                    <StackPanel Orientation="Vertical">
+                        <Button x:Name="differenceAB" VerticalAlignment="Top" Width="40" Content="A-B" Margin="0,0,0,0" Click="difference_ClickAB" IsEnabled="False" />
+                        <Button x:Name="differenceBA" VerticalAlignment="Top" Width="40" Content="B-A" Margin="0,0,0,0" Click="difference_ClickBA" IsEnabled="False" />
+                        <Button x:Name="sum" VerticalAlignment="Top" Width="40" Content="A+B" Margin="0,0,0,0" Click="sum_Click" IsEnabled="False" />
+                    </StackPanel>
+                </GroupBox>
+                <DockPanel DockPanel.Dock="Top">
+                    <Rectangle x:Name="color_scale" Stroke="Black"  StrokeThickness="2" Width="40">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="1"/>
+                                <GradientStop Color="White"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Grid DockPanel.Dock="Left">
+                        <Label x:Name="upperBond" Content="" VerticalAlignment="Top" />
+                        <Label x:Name="lowerBond" Content="" VerticalAlignment="Bottom" />
+                        <Label x:Name="zeroBond" Content="0" VerticalAlignment="Bottom" >
+                            <Label.Margin>
+                                <MultiBinding Converter="{StaticResource MarginConverter}">
+                                    <Binding Path="ActualHeight"  ElementName="color_scale"></Binding>
+                                    <Binding Path="DataContext"  ElementName="zeroBond"></Binding>
+                                </MultiBinding>
+                            </Label.Margin>
+                            <Label.DataContext>
+                                <System:Double>-1</System:Double>
+                            </Label.DataContext>
+                        </Label>
+
+                    </Grid>
+                </DockPanel>
+            </DockPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0" VerticalAlignment="Top">
             <Label x:Name="countername" x:FieldModifier="private" Margin="5,5,0,5" Content="slice:" />

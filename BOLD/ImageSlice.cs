@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
+using System.Globalization;
 
 namespace BOLD
 {
@@ -19,7 +20,9 @@ namespace BOLD
         public string sliceName { get; private set; }
         public string sliceFileName { get; set; }
         public int[, ,] sliceData { get; private set; }
-        private int minIntensity, maxIntensity;
+        public int minIntensity { get; private set; }
+        public int maxIntensity { get; private set; }
+        public double zeroIntensity { get; private set; }
         public Int32Rect selection { get; private set; }
         public string header { get; private set; }
 
@@ -64,9 +67,9 @@ namespace BOLD
                         sliceName = words[i + 2];
                     if (words[i + 1] == "Voxel_Size:")
                     {
-                        xRealSize = Double.Parse(words[i + 2]);
-                        yRealSize = Double.Parse(words[i + 3]);
-                        zRealSize = Double.Parse(words[i + 4]);
+                        xRealSize = Double.Parse(words[i + 2], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        yRealSize = Double.Parse(words[i + 3], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        zRealSize = Double.Parse(words[i + 4], NumberStyles.Any, CultureInfo.InvariantCulture);
                     }
                     if (words[i + 1] == "Voxel_Units:")
                         realType = words[i + 2];
@@ -84,13 +87,16 @@ namespace BOLD
             for (int i = 0; i < words.Count(); i += 4)
             {
                 int word = Int32.Parse(words[i + 3]);
-                sliceData[Int32.Parse(words[i]), Int32.Parse(words[i + 1]), Int32.Parse(words[i + 2]) - 1] = word;
+                sliceData[Int32.Parse(words[i]) - 1, Int32.Parse(words[i + 1]) - 1, Int32.Parse(words[i + 2]) - 1] = word;
                 if (maxIntensity < word)
                     maxIntensity = word;
                 if (word != 0 && minIntensity > word)
                     minIntensity = word;
             }
-
+            if (minIntensity > 0)
+                zeroIntensity = -1.0;
+            else
+                zeroIntensity = -minIntensity/(double)(maxIntensity - minIntensity) ;
             // initialize selection
             selection = new Int32Rect();
             int minX, maxX, minY, maxY;
@@ -139,8 +145,8 @@ namespace BOLD
                         for (int j = 0; j < ySize; j++)
                             for (int i = 0; i < xSize; i++)
                             { 
-                                if (sliceData[i,j,k]>0)
-                                    writer.WriteLine(i.ToString() + " " + j.ToString() + " " + (k+1).ToString() + " " + sliceData[i, j, k].ToString());
+                                //if (sliceData[i,j,k]>0)
+                                    writer.WriteLine((i+1).ToString() + " " + (j+1).ToString() + " " + (k+1).ToString() + " " + sliceData[i, j, k].ToString());
                             }
                 }
             }
@@ -156,10 +162,24 @@ namespace BOLD
                 throw new ArgumentOutOfRangeException("operator +: all sizes have to be the same");
             ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
             c.sliceFileName = c1.sliceFileName + "+" + c2.sliceFileName;
+            var tmp = c.minIntensity;
+            c.minIntensity = c.maxIntensity;
+            c.maxIntensity = tmp;
             for (int i = 0; i < c.xSize; i++)
                 for (int j = 0; j < c.ySize; j++)
                     for (int k = 0; k < c.zSize; k++)
+                    {
                         c.sliceData[i, j, k] += c2.sliceData[i, j, k];
+                        if (c.sliceData[i, j, k] < c.minIntensity)
+                            c.minIntensity = c.sliceData[i, j, k];
+                        if (c.sliceData[i, j, k] > c.maxIntensity)
+                            c.maxIntensity = c.sliceData[i, j, k];
+                    }
+            if (c.minIntensity>0)
+                c.zeroIntensity=-1.0;
+            else
+                c.zeroIntensity = -c.minIntensity/(double)(c.maxIntensity - c.minIntensity) ;
+
             return c;
         }
         public static ImageSlice operator -(ImageSlice c1, ImageSlice c2)
@@ -169,10 +189,23 @@ namespace BOLD
 
             ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
             c.sliceFileName = c1.sliceFileName + "-" + c2.sliceFileName;
+            var tmp = c.minIntensity;
+            c.minIntensity = c.maxIntensity;
+            c.maxIntensity = tmp;
             for (int i = 0; i < c.xSize; i++)
                 for (int j = 0; j < c.ySize; j++)
                     for (int k = 0; k < c.zSize; k++)
+                    {
                         c.sliceData[i, j, k] -= c2.sliceData[i, j, k];
+                        if (c.sliceData[i, j, k] < c.minIntensity)
+                            c.minIntensity = c.sliceData[i, j, k];
+                        if (c.sliceData[i, j, k] > c.maxIntensity)
+                            c.maxIntensity = c.sliceData[i, j, k];
+                    }
+            if (c.minIntensity>0)
+                c.zeroIntensity=-1.0;
+            else
+                c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity );
             return c;
         }
 

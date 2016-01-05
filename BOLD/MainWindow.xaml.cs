@@ -19,7 +19,7 @@ namespace BOLD
             txtNum.Text = _numSlice.ToString();
         }
         // Menu items controlers
-        private void Exit_Click(object sender, RoutedEventArgs e)
+        private void exit_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -53,7 +53,7 @@ namespace BOLD
             NumSlice = _numSlice;
         }
 
-        private void Add_Click(object sender, RoutedEventArgs e)
+        private void add_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
@@ -70,12 +70,13 @@ namespace BOLD
                 // Activate difference button if at least 2 images are added
                 if (_imageData.Count >= 2)
                 {
-                    difference.IsEnabled = true;
+                    differenceAB.IsEnabled = true;
+                    differenceBA.IsEnabled = true;
                     sum.IsEnabled = true;
                 }
             }
         }
-        private void Replace_Click(object sender, RoutedEventArgs e)
+        private void replace_Click(object sender, RoutedEventArgs e)
         {
             if (fileNameBox.SelectedIndex == -1)
                 throw new System.Exception("No image selected, cannot replace!");
@@ -119,7 +120,18 @@ namespace BOLD
                 image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
                 // if resize box is checked resize image
                 CheckedResize = resize.IsChecked.Value;
-
+                // change dataContent for Image: max and min intensity
+                upperBond.Content = _imageData[fileNameBox.SelectedIndex].maxIntensity.ToString();
+                lowerBond.Content = _imageData[fileNameBox.SelectedIndex].minIntensity.ToString();
+                // set DataContext for zeroIntensity
+                // this will be then used by xaml and MarginConverter
+                if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
+                    zeroBond.Content = "";
+                else
+                {
+                    zeroBond.Content = "0";
+                    zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
+                }
             }
         }
 
@@ -180,9 +192,14 @@ namespace BOLD
             CheckedResize = false;
         }
 
-        private void difference_Click(object sender, RoutedEventArgs e)
+        private void difference_ClickAB(object sender, RoutedEventArgs e)
         {
             ImageSlice slice = _imageData[0] - _imageData[1];
+            AddImage(slice, slice.sliceFileName);
+        }
+        private void difference_ClickBA(object sender, RoutedEventArgs e)
+        {
+            ImageSlice slice = _imageData[1] - _imageData[0];
             AddImage(slice, slice.sliceFileName);
         }
         private void sum_Click(object sender, RoutedEventArgs e)
@@ -200,12 +217,23 @@ namespace BOLD
             image.Source = null;
             if (_imageData.Count < 2)
             {
-                difference.IsEnabled = false;
+                differenceAB.IsEnabled = false;
+                differenceBA.IsEnabled = false;
                 sum.IsEnabled = false;
             }
 
         }
-        private void Save_As_Click(object sender, RoutedEventArgs e)
+        private void new_Click(object sender, RoutedEventArgs e)
+        {
+            _imageData.Clear();
+            fileNameBox.Items.Clear();
+            image.Source = null;
+            differenceAB.IsEnabled = false;
+            differenceBA.IsEnabled = false;
+            sum.IsEnabled = false;
+            txtNum.Text = "0";
+        }
+        private void save_As_Click(object sender, RoutedEventArgs e)
         {
             if (fileNameBox.SelectedIndex == -1)
                 throw new System.Exception("No image selected, cannot save!");
