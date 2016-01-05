@@ -29,14 +29,23 @@
             </MenuItem>
         </Menu>
         <StackPanel x:Name="canv" Margin="20,57,20,50" Orientation="Horizontal">
-            <Image x:Name="image" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" RenderTransformOrigin="0.5,0.5" >
-                <Image.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleY="-1" ScaleX="1"/>
-                        <RotateTransform Angle="90"/>
-                    </TransformGroup>
-                </Image.RenderTransform>
-            </Image>
+            <Canvas x:Name="drawBox" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" 
+                    MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" MouseMove="Grid_MouseMove">
+                <Image x:Name="image" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" RenderTransformOrigin="0.5,0.5" >
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                            <RotateTransform Angle="90"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+                <Rectangle x:Name="selectionBox" Visibility="Collapsed" Stroke="Black" StrokeThickness="1">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="#7F0000B8" Opacity="0.5"/>
+                    </Rectangle.Fill>
+
+                </Rectangle>
+            </Canvas>
             <DockPanel Margin="5,0,0,0" >
                 <GroupBox Header="Opierations" DockPanel.Dock="Top">
                     <StackPanel Orientation="Vertical">
