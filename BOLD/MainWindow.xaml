@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Avalon="clr-namespace:Utils.Avalon" xmlns:local="clr-namespace:BOLD" xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="window" mc:Ignorable="d" x:Class="BOLD.MainWindow"
         
-        Title="BOLD" Height="350" Width="350" MinWidth="350" MinHeight="350"
+        Title="BOLD" Height="350" Width="416" MinWidth="420" MinHeight="350"
         >
     <Window.Resources>
         <local:MarginConverter x:Key="MarginConverter"/>
@@ -28,7 +28,7 @@
 
             </MenuItem>
         </Menu>
-        <StackPanel x:Name="canv" Margin="20,57,20,50" Orientation="Horizontal">
+        <StackPanel x:Name="canv" Margin="10,57,10,50" Orientation="Horizontal">
             <Canvas x:Name="drawBox" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" 
                     MouseDown="Grid_MouseDown" MouseUp="Grid_MouseUp" MouseMove="Grid_MouseMove">
                 <Image x:Name="image" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" RenderTransformOrigin="0.5,0.5" >
@@ -66,7 +66,7 @@
                     <Grid DockPanel.Dock="Left">
                         <Label x:Name="upperBond" Content="" VerticalAlignment="Top" />
                         <Label x:Name="lowerBond" Content="" VerticalAlignment="Bottom" />
-                        <Label x:Name="zeroBond" Content="0" VerticalAlignment="Bottom" >
+                        <Label x:Name="zeroBond" Content="0" VerticalAlignment="Bottom" Visibility="Collapsed" >
                             <Label.Margin>
                                 <MultiBinding Converter="{StaticResource MarginConverter}">
                                     <Binding Path="ActualHeight"  ElementName="color_scale"></Binding>
@@ -81,6 +81,31 @@
                     </Grid>
                 </DockPanel>
             </DockPanel>
+            <GroupBox Header="Mouse" DockPanel.Dock="Top">
+                <Grid Height="90" VerticalAlignment="Top" Width="80">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="4*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="x:"  FontWeight="Bold" HorizontalAlignment="Right"  />
+                    <TextBlock Text="y:" Grid.Row="1"  FontWeight="Bold" HorizontalAlignment="Right"  />
+                    <TextBlock x:Name="xPos"  Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="yPos" Grid.Row="1"  Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock Text="Statistics" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" TextDecorations="Underline" />
+                    <TextBlock Text="Avg:" FontWeight="Bold" Grid.Row="3" HorizontalAlignment="Right"  />
+                    <TextBlock Text="Std:" FontWeight="Bold" Grid.Row="4" HorizontalAlignment="Right"  />
+                    <TextBlock x:Name="avgImg" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="stdImg" Grid.Row="4"  Grid.Column="1" HorizontalAlignment="Center" />               
+                </Grid>
+            </GroupBox>
+
         </StackPanel>
         <StackPanel Orientation="Horizontal" Margin="0,20,0,0" VerticalAlignment="Top">
             <Label x:Name="countername" x:FieldModifier="private" Margin="5,5,0,5" Content="slice:" />

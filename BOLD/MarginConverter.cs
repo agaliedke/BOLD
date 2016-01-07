@@ -8,7 +8,7 @@ namespace BOLD
         public object Convert(object[] values, System.Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (values[1]==null || (double)values[1] == -1 )
-                return null;
+                return new Thickness(0, 0, 0, 0);
             else
                 return new Thickness(0, 0, 0, System.Convert.ToDouble((double)values[0]*(double)values[1]));
         }

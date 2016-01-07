@@ -4,8 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.IO;
-using System.Windows.Threading;
 using System.Windows.Input;
+using System.Windows.Media;
+using System;
 
 namespace BOLD
 {
@@ -19,6 +20,7 @@ namespace BOLD
             InitializeComponent();
             txtNum.Text = _numSlice.ToString();
         }
+
         // Menu items controlers
         private void exit_Click(object sender, RoutedEventArgs e)
         {
@@ -93,6 +95,28 @@ namespace BOLD
                 ReplaceImage(slice, Path.GetFileNameWithoutExtension(openFileDialog.FileName));
             }
         }
+        private void new_Click(object sender, RoutedEventArgs e)
+        {
+            _imageData.Clear();
+            fileNameBox.Items.Clear();
+            image.Source = null;
+            differenceAB.IsEnabled = false;
+            differenceBA.IsEnabled = false;
+            sum.IsEnabled = false;
+            txtNum.Text = "0";
+        }
+        private void save_As_Click(object sender, RoutedEventArgs e)
+        {
+            if (fileNameBox.SelectedIndex == -1)
+                throw new System.Exception("No image selected, cannot save!");
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                _imageData[fileNameBox.SelectedIndex].SaveImage(saveFileDialog.FileName);
+            }
+        }
+
+
         // List of images
         private List<ImageSlice> _imageData = new List<ImageSlice>();
         
@@ -127,15 +151,38 @@ namespace BOLD
                 // set DataContext for zeroIntensity
                 // this will be then used by xaml and MarginConverter
                 if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
+                {
                     zeroBond.Content = "";
+                    zeroBond.DataContext = 0.0;
+                    zeroBond.Visibility = Visibility.Collapsed;
+                }
                 else
                 {
                     zeroBond.Content = "0";
                     zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
+                    zeroBond.Visibility = Visibility.Visible;
                 }
             }
         }
+        private void cmdUp_Click(object sender, RoutedEventArgs e)
+        {
+            NumSlice++;
+        }
 
+        private void cmdDown_Click(object sender, RoutedEventArgs e)
+        {
+            NumSlice--;
+        }
+        private void txtNum_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtNum == null)
+                return;
+
+            if (int.TryParse(txtNum.Text, out _numSlice))
+                NumSlice = _numSlice;
+
+
+        }
         // controler for image resize checkbox
         bool _checkedResize = false;
         public bool CheckedResize
@@ -151,28 +198,16 @@ namespace BOLD
                     image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
             }
         }
-
-        private void cmdUp_Click(object sender, RoutedEventArgs e)
+        private void resize_Checked(object sender, RoutedEventArgs e)
         {
-            NumSlice++;
+            CheckedResize = true;
+        }
+        private void resize_UnChecked(object sender, RoutedEventArgs e)
+        {
+            CheckedResize = false;
         }
 
-        private void cmdDown_Click(object sender, RoutedEventArgs e)
-        {
-            NumSlice--;
-        }
-
-        private void txtNum_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (txtNum == null)
-                return;
-
-            if (int.TryParse(txtNum.Text, out _numSlice))
-                NumSlice = _numSlice;
-
-
-        }
-
+        // controler for combobox -> loaded image changer
         private void fileName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (fileNameBox.SelectedIndex == -1)
@@ -184,15 +219,8 @@ namespace BOLD
                 
         }
 
-        private void resize_Checked(object sender, RoutedEventArgs e)
-        {
-            CheckedResize = true;
-        }
-        private void resize_UnChecked(object sender, RoutedEventArgs e)
-        {
-            CheckedResize = false;
-        }
 
+        // buttons of different operation controllers
         private void difference_ClickAB(object sender, RoutedEventArgs e)
         {
             ImageSlice slice = _imageData[0] - _imageData[1];
@@ -209,6 +237,7 @@ namespace BOLD
             AddImage(slice, slice.sliceFileName);
         }
 
+        // remove button
         private void remove_Click(object sender, RoutedEventArgs e)
         {
             if (fileNameBox.SelectedIndex == -1)
@@ -224,28 +253,10 @@ namespace BOLD
             }
 
         }
-        private void new_Click(object sender, RoutedEventArgs e)
-        {
-            _imageData.Clear();
-            fileNameBox.Items.Clear();
-            image.Source = null;
-            differenceAB.IsEnabled = false;
-            differenceBA.IsEnabled = false;
-            sum.IsEnabled = false;
-            txtNum.Text = "0";
-        }
-        private void save_As_Click(object sender, RoutedEventArgs e)
-        {
-            if (fileNameBox.SelectedIndex == -1)
-                throw new System.Exception("No image selected, cannot save!");
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                _imageData[fileNameBox.SelectedIndex].SaveImage(saveFileDialog.FileName);
-            }
-        }
+
 
         // functionality of selection box for active image
+
         bool mouseDown = false; // Set to 'true' when mouse is held down.
         Point mouseDownPos; // The point where the mouse button was clicked down.
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -253,6 +264,8 @@ namespace BOLD
             // Capture and track the mouse.
             mouseDown = true;
             mouseDownPos = e.GetPosition(image);
+            mouseDownPos = transformMouse(mouseDownPos);
+
             image.CaptureMouse();
 
             // Initial placement of the drag selection box.         
@@ -275,13 +288,27 @@ namespace BOLD
             selectionBox.Visibility = Visibility.Collapsed;
 
             Point mouseUpPos = e.GetPosition(image);
-
+            mouseUpPos = transformMouse(mouseUpPos);
             // TODO: 
             //
             // The mouse has been released, check to see if any of the items 
             // in the other canvas are contained within mouseDownPos and 
             // mouseUpPos, for any that are, select them!
             //
+            xPos.Text = Math.Round(mouseUpPos.X).ToString();
+            yPos.Text = Math.Round(mouseUpPos.Y).ToString();
+            if (selectionBox.Width>0 && selectionBox.Height>0)
+            {
+                var r = new Int32Rect(
+                    Convert.ToInt32(Canvas.GetLeft(selectionBox) * _imageData[fileNameBox.SelectedIndex].xSize / image.Width),
+                    Convert.ToInt32(Canvas.GetTop(selectionBox) * _imageData[fileNameBox.SelectedIndex].ySize / image.Height),
+                    Convert.ToInt32(selectionBox.Width * _imageData[fileNameBox.SelectedIndex].xSize / image.Width),
+                    Convert.ToInt32(selectionBox.Height * _imageData[fileNameBox.SelectedIndex].ySize / image.Height)
+                    );
+                var average = _imageData[fileNameBox.SelectedIndex].GetAverage(r, _numSlice);
+                avgImg.Text = (Math.Truncate(average.Item1 * 10) / 10).ToString();
+                stdImg.Text = (Math.Truncate(average.Item2 * 10) / 10).ToString();
+            }
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
@@ -291,6 +318,8 @@ namespace BOLD
                 // When the mouse is held down, reposition the drag selection box.
 
                 Point mousePos = e.GetPosition(image);
+
+                mousePos = transformMouse(mousePos);
 
                 if (mouseDownPos.X < mousePos.X)
                 {
@@ -314,6 +343,15 @@ namespace BOLD
                     selectionBox.Height = mouseDownPos.Y - mousePos.Y;
                 }
             }
+        }
+        // transforming mouse position invers to transformation of image object
+        private Point transformMouse(Point mousePos)
+        {
+            var rt = new RotateTransform(-90, image.ActualWidth / 2.0, image.ActualHeight / 2.0);
+            var st = new ScaleTransform(-1, 1, image.ActualWidth / 2.0, image.ActualHeight / 2.0);
+            mousePos = st.Transform(mousePos);
+            mousePos = rt.Transform(mousePos);
+            return mousePos;
         }
     }
 

@@ -19,7 +19,7 @@ namespace BOLD
         private string realType;
         public string sliceName { get; private set; }
         public string sliceFileName { get; set; }
-        public int[, ,] sliceData { get; private set; }
+        public int[,,] sliceData { get; private set; }
         public int minIntensity { get; private set; }
         public int maxIntensity { get; private set; }
         public double zeroIntensity { get; private set; }
@@ -96,7 +96,7 @@ namespace BOLD
             if (minIntensity > 0)
                 zeroIntensity = -1.0;
             else
-                zeroIntensity = -minIntensity/(double)(maxIntensity - minIntensity) ;
+                zeroIntensity = -minIntensity / (double)(maxIntensity - minIntensity);
             // initialize selection
             selection = new Int32Rect();
             int minX, maxX, minY, maxY;
@@ -144,9 +144,9 @@ namespace BOLD
                     for (int k = 0; k < zSize; k++)
                         for (int j = 0; j < ySize; j++)
                             for (int i = 0; i < xSize; i++)
-                            { 
+                            {
                                 //if (sliceData[i,j,k]>0)
-                                    writer.WriteLine((i+1).ToString() + " " + (j+1).ToString() + " " + (k+1).ToString() + " " + sliceData[i, j, k].ToString());
+                                writer.WriteLine((i + 1).ToString() + " " + (j + 1).ToString() + " " + (k + 1).ToString() + " " + sliceData[i, j, k].ToString());
                             }
                 }
             }
@@ -155,6 +155,20 @@ namespace BOLD
                 MessageBox.Show("The file could not be write: " + e.Message, "SaveImage", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+        }
+        public Tuple<double, double> GetAverage(Int32Rect r, int i_slice)
+        {
+            var avg = 0.0;
+            var std = 0.0;
+            for (int i = r.X < 0 ? 0 : r.X; i < (r.X + r.Width > xSize ? xSize : r.X + r.Width) ; i++)
+                for (int j = r.Y < 0 ? 0 : r.Y ; j < (r.Y + r.Height > ySize ? ySize : r.Y + r.Height) ; j++)
+                {
+                    avg += sliceData[i, j, i_slice];
+                    std += (sliceData[i, j, i_slice] * sliceData[i, j, i_slice]);
+                }
+            avg /= r.Width * r.Height;
+            std = Math.Sqrt(std / r.Width / r.Height - avg * avg);
+            return Tuple.Create(avg, std);
         }
         public static ImageSlice operator +(ImageSlice c1, ImageSlice c2)
         {
@@ -175,10 +189,10 @@ namespace BOLD
                         if (c.sliceData[i, j, k] > c.maxIntensity)
                             c.maxIntensity = c.sliceData[i, j, k];
                     }
-            if (c.minIntensity>0)
-                c.zeroIntensity=-1.0;
+            if (c.minIntensity > 0)
+                c.zeroIntensity = -1.0;
             else
-                c.zeroIntensity = -c.minIntensity/(double)(c.maxIntensity - c.minIntensity) ;
+                c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
 
             return c;
         }
@@ -202,10 +216,10 @@ namespace BOLD
                         if (c.sliceData[i, j, k] > c.maxIntensity)
                             c.maxIntensity = c.sliceData[i, j, k];
                     }
-            if (c.minIntensity>0)
-                c.zeroIntensity=-1.0;
+            if (c.minIntensity > 0)
+                c.zeroIntensity = -1.0;
             else
-                c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity );
+                c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
             return c;
         }
 
