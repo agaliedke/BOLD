@@ -113,6 +113,10 @@
     <Resource Include="Slices\Air_1.txt" />
     <Resource Include="Slices\O2_1.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Pictures\circle-down-icon.png" />
+    <Resource Include="Pictures\circle-up-icon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
