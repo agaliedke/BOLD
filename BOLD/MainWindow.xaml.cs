@@ -115,7 +115,11 @@ namespace BOLD
                 _imageData[fileNameBox.SelectedIndex].SaveImage(saveFileDialog.FileName);
             }
         }
-
+        private void about_Click(object sender, RoutedEventArgs e)
+        {
+            var about = new About();
+            about.Show();
+        }
 
         // List of images
         private List<ImageSlice> _imageData = new List<ImageSlice>();
@@ -289,11 +293,8 @@ namespace BOLD
 
             Point mouseUpPos = e.GetPosition(image);
             mouseUpPos = transformMouse(mouseUpPos);
-            // TODO: 
             //
-            // The mouse has been released, check to see if any of the items 
-            // in the other canvas are contained within mouseDownPos and 
-            // mouseUpPos, for any that are, select them!
+            // The mouse has been released, calculate all related statistics below
             //
             xPos.Text = Math.Round(mouseUpPos.X).ToString();
             yPos.Text = Math.Round(mouseUpPos.Y).ToString();
@@ -308,6 +309,11 @@ namespace BOLD
                 var average = _imageData[fileNameBox.SelectedIndex].GetAverage(r, _numSlice);
                 avgImg.Text = (Math.Truncate(average.Item1 * 10) / 10).ToString();
                 stdImg.Text = (Math.Truncate(average.Item2 * 10) / 10).ToString();
+                xSize.Text = (Math.Truncate(r.Width * _imageData[fileNameBox.SelectedIndex].xRealSize * 100.0) / 100.0).ToString() +
+                    " " + _imageData[fileNameBox.SelectedIndex].realUnit;
+                ySize.Text = (Math.Truncate(r.Height * _imageData[fileNameBox.SelectedIndex].yRealSize * 100.0) / 100.0).ToString() +
+                    " " + _imageData[fileNameBox.SelectedIndex].realUnit;
+                zSize.Text = _imageData[fileNameBox.SelectedIndex].zRealSize.ToString() + " " + _imageData[fileNameBox.SelectedIndex].realUnit;
             }
         }
 

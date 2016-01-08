@@ -15,8 +15,10 @@ namespace BOLD
         public int ySize { get; private set; }
         public int zSize { get; private set; }
         //private int xSize, ySize, zSize;
-        private double xRealSize, yRealSize, zRealSize;
-        private string realType;
+        public double xRealSize { get; private set; }
+        public double yRealSize { get; private set; }
+        public double zRealSize { get; private set; }
+        public string realUnit { get; private set; }
         public string sliceName { get; private set; }
         public string sliceFileName { get; set; }
         public int[,,] sliceData { get; private set; }
@@ -72,7 +74,7 @@ namespace BOLD
                         zRealSize = Double.Parse(words[i + 4], NumberStyles.Any, CultureInfo.InvariantCulture);
                     }
                     if (words[i + 1] == "Voxel_Units:")
-                        realType = words[i + 2];
+                        realUnit = words[i + 2];
 
                 }
             }

@@ -1,0 +1,53 @@
+﻿<Window x:Class="BOLD.About"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BOLD"
+        mc:Ignorable="d"
+        Title="About" Height="270" Width="300"
+        ResizeMode="NoResize" MaxWidth="300" MaxHeight="270" Icon="Pictures/Logo.png">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="4*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <Image Source="Pictures/Logo.png" Height="40" Width="40" Margin="10,0,0,0" />
+            <TextBlock Text="BOLD" VerticalAlignment="Center" Margin="10,0,0,0" />
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="20,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Description:"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Program for multiple MRI images manipulation" TextWrapping="Wrap" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Release:"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="January 2016" TextWrapping="Wrap" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Authors:"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap">
+                Agnieszka Boś-Liedke <LineBreak/>
+                Bartosz Liedke
+            </TextBlock>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Contacts:"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" TextWrapping="Wrap">
+                agnieszkaboss@gmail.com <LineBreak/>
+                liedkeb@gmail.com
+            </TextBlock>
+            <Button x:Name="ok" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="60" Height="20" Content="OK" Click="ok_Click"/>
+
+
+        </Grid>
+
+    </Grid>
+</Window>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Avalon="clr-namespace:Utils.Avalon" xmlns:local="clr-namespace:BOLD" xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="window" mc:Ignorable="d" x:Class="BOLD.MainWindow"
         
-        Title="BOLD" Height="350" Width="416" MinWidth="420" MinHeight="350"
+        Title="BOLD" Height="350" Width="430" MinWidth="430" MinHeight="350" Icon="Pictures/Logo.png"
         >
     <Window.Resources>
         <local:MarginConverter x:Key="MarginConverter"/>
@@ -27,6 +27,9 @@
                 <MenuItem Header="_Exit" Click="exit_Click" />
 
             </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Click="about_Click" />
+            </MenuItem>
         </Menu>
         <StackPanel x:Name="canv" Margin="10,57,10,50" Orientation="Horizontal">
             <Canvas x:Name="drawBox" Width="{Binding ActualHeight, ElementName=canv}" Height="{Binding ActualHeight, ElementName=canv}" 
@@ -41,7 +44,7 @@
                 </Image>
                 <Rectangle x:Name="selectionBox" Visibility="Collapsed" Stroke="Black" StrokeThickness="1">
                     <Rectangle.Fill>
-                        <SolidColorBrush Color="#7F0000B8" Opacity="0.5"/>
+                        <SolidColorBrush Color="#7F4040D1" Opacity="0.5"/>
                     </Rectangle.Fill>
 
                 </Rectangle>
@@ -81,28 +84,45 @@
                     </Grid>
                 </DockPanel>
             </DockPanel>
-            <GroupBox Header="Mouse" DockPanel.Dock="Top">
-                <Grid Height="90" VerticalAlignment="Top" Width="80">
+            <GroupBox Header="Mouse" DockPanel.Dock="Top" VerticalAlignment="Top">
+                <Grid Height="180" VerticalAlignment="Top" Width="85">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="4*"/>
-                        <RowDefinition Height="4*"/>
-                        <RowDefinition Height="4*"/>
-                        <RowDefinition Height="4*"/>
-                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="x:"  FontWeight="Bold" HorizontalAlignment="Right"  />
-                    <TextBlock Text="y:" Grid.Row="1"  FontWeight="Bold" HorizontalAlignment="Right"  />
-                    <TextBlock x:Name="xPos"  Grid.Column="1" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="yPos" Grid.Row="1"  Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock Text="x:"  FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
+                    <TextBlock Text="y:" Grid.Row="1"  FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
+                    <TextBox x:Name="xPos"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="yPos" Grid.Row="1"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
                     <TextBlock Text="Statistics" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" TextDecorations="Underline" />
-                    <TextBlock Text="Avg:" FontWeight="Bold" Grid.Row="3" HorizontalAlignment="Right"  />
-                    <TextBlock Text="Std:" FontWeight="Bold" Grid.Row="4" HorizontalAlignment="Right"  />
-                    <TextBlock x:Name="avgImg" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" />
-                    <TextBlock x:Name="stdImg" Grid.Row="4"  Grid.Column="1" HorizontalAlignment="Center" />               
+                    <TextBlock Text="Avg:" FontWeight="Bold" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
+                    <TextBlock Text="Std:" FontWeight="Bold" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
+                    <TextBox x:Name="avgImg" Grid.Row="3" Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="stdImg" Grid.Row="4"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBlock Text="Box" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" TextDecorations="Underline" />
+                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
+                        <Run>c</Run><Run Typography.Variants="Subscript">x</Run><Run>:</Run>
+                    </TextBlock>
+                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="7" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
+                        <Run>c</Run><Run Typography.Variants="Subscript">y</Run><Run>:</Run>
+                    </TextBlock>
+                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
+                        <Run>c</Run><Run Typography.Variants="Subscript">z</Run><Run>:</Run>
+                    </TextBlock>
+                    <TextBox x:Name="xSize" Grid.Row="6" Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="ySize" Grid.Row="7"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="zSize" Grid.Row="8"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
                 </Grid>
             </GroupBox>
 
