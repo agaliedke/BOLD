@@ -28,6 +28,10 @@ namespace BOLD
         public Int32Rect selection { get; private set; }
         public string header { get; private set; }
 
+        /// <summary>
+        /// Constructor of clase ImageSlice. Loades a file with an image to a object ImageSlice
+        /// </summary>
+        /// <param name="filePath">Full path to file to be load</param>
         public ImageSlice(string filePath)
         {
             string data = "";
@@ -121,6 +125,11 @@ namespace BOLD
             selection = new Int32Rect(minY, minX, maxY - minY, maxX - minX);
 
         }
+        /// <summary>
+        /// Converts numeric data from the class with slice to BitmapSource
+        /// </summary>
+        /// <param name="i_slice">number of slice to return</param>
+        /// <returns>BitmapSource with image form this class.</returns>
         public BitmapSource GetImage(int i_slice)
         {
 
@@ -136,6 +145,10 @@ namespace BOLD
             BitmapSource bmpSource = BitmapSource.Create(xSize, ySize, 96, 96, PixelFormats.Gray8, null, pixelData, xSize);
             return bmpSource;
         }
+        /// <summary>
+        /// Saves image to file
+        /// </summary>
+        /// <param name="filePath">Path to a file as a string.</param>
         public void SaveImage(string filePath)
         {
             try
@@ -158,6 +171,12 @@ namespace BOLD
                 return;
             }
         }
+        /// <summary>
+        /// Calculates average of selected region.
+        /// </summary>
+        /// <param name="r">Rectangle object with coordinates of the selected region</param>
+        /// <param name="i_slice">number of slice.</param>
+        /// <returns>Tuple with avarage and standard deviation of the region.</returns>
         public Tuple<double, double> GetAverage(Int32Rect r, int i_slice)
         {
             var avg = 0.0;
@@ -172,6 +191,12 @@ namespace BOLD
             std = Math.Sqrt(std / r.Width / r.Height - avg * avg);
             return Tuple.Create(avg, std);
         }
+        /// <summary>
+        /// Summs up two images.
+        /// </summary>
+        /// <param name="c1">image 1<param>
+        /// <param name="c2">image 2</param>
+        /// <returns>image 1 + image 2</returns>
         public static ImageSlice operator +(ImageSlice c1, ImageSlice c2)
         {
             if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
@@ -198,6 +223,12 @@ namespace BOLD
 
             return c;
         }
+        /// <summary>
+        /// Differentiate two images.
+        /// </summary>
+        /// <param name="c1">image 1</param>
+        /// <param name="c2">image 2</param>
+        /// <returns>image 1 - image 2</returns>
         public static ImageSlice operator -(ImageSlice c1, ImageSlice c2)
         {
             if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
