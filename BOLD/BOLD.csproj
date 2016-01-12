@@ -118,10 +118,6 @@
     <Resource Include="Pictures\delete.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Slices\Air_1.txt" />
-    <Resource Include="Slices\O2_1.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Pictures\circle-down-icon.png" />
     <Resource Include="Pictures\circle-up-icon.png" />
   </ItemGroup>
