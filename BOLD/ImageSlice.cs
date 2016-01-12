@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace BOLD
 {
@@ -129,21 +130,45 @@ namespace BOLD
         /// Converts numeric data from the class with slice to BitmapSource
         /// </summary>
         /// <param name="i_slice">number of slice to return</param>
+        /// <param name="zeroPoint">separation between red and blue color</param>
         /// <returns>BitmapSource with image form this class.</returns>
-        public BitmapSource GetImage(int i_slice)
+        public BitmapSource GetImage(int i_slice, int zeroPoint)
         {
-
-            byte[] pixelData = new byte[xSize * ySize];
+            int stride = ySize * 3 + (ySize % 4);
+            byte[] pixelData = new byte[xSize * stride];
             for (int i = 0; i < xSize; i++)
                 for (int j = 0; j < ySize; j++)
                 {
                     byte color = sliceData[i, j, i_slice] == 0 ? (byte)0 :
                         (byte)(Math.Round((sliceData[i, j, i_slice] - minIntensity) / (double)(maxIntensity - minIntensity) * 255.0));
-                    pixelData[j + i * xSize] = color;
-                }
 
-            BitmapSource bmpSource = BitmapSource.Create(xSize, ySize, 96, 96, PixelFormats.Gray8, null, pixelData, xSize);
-            return bmpSource;
+                    if (minIntensity < 0)
+                    {
+                        if (sliceData[i, j, i_slice] >= zeroPoint)
+                        {
+                            pixelData[j * 3 + i * stride] = color;
+                            pixelData[j * 3 + i * stride + 2] = 0;
+                        }
+                        else
+                        {
+                            pixelData[j * 3 + i * stride] = 0;
+                            pixelData[j * 3 + i * stride + 2] = Convert.ToByte(255 - color);
+                        }
+                        pixelData[j * 3 + i * stride + 1] = 0;
+                    }
+                    else
+                    {
+                        pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride +1] = pixelData[j * 3 + i * stride+2] = color;
+
+                    }
+                }
+            List<Color> colors = new List<Color>();
+            colors.Add(Colors.Red);
+            colors.Add(Colors.Green);
+            colors.Add(Colors.Blue);
+            var myPalette = new BitmapPalette(colors);
+            var pixelFormat = PixelFormats.Rgb24;
+            return BitmapSource.Create(xSize, ySize, 300, 300, pixelFormat, null, pixelData, stride);
         }
         /// <summary>
         /// Saves image to file

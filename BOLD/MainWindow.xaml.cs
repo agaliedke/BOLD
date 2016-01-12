@@ -39,9 +39,18 @@ namespace BOLD
             fileNameBox.Items.Add(item);
             fileNameBox.SelectedIndex = fileNameBox.Items.Count - 1;
             _numImage++;
-
-            // update Image
-            NumSlice = _numSlice;
+            if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
+            {
+                zeroBond.Content = "";
+                zeroBond.DataContext = 0.0;
+            }
+            else
+            {
+                zeroBond.Content = "0";
+                zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
+            }
+                // update Image
+                //NumSlice = _numSlice;
         }
         private void ReplaceImage(ImageSlice slice, string sliceName)
         {
@@ -145,9 +154,7 @@ namespace BOLD
                     _numSlice = value;
                 // update text box
                 txtNum.Text = _numSlice.ToString();
-                // insert proper image
-                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
-                // if resize box is checked resize image
+                // if resize box is checked resize image and insert to image control
                 CheckedResize = resize.IsChecked.Value;
                 // change dataContent for Image: max and min intensity
                 upperBond.Content = _imageData[fileNameBox.SelectedIndex].maxIntensity.ToString();
@@ -156,15 +163,22 @@ namespace BOLD
                 // this will be then used by xaml and MarginConverter
                 if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
                 {
-                    zeroBond.Content = "";
-                    zeroBond.DataContext = 0.0;
+                    //zeroBond.Content = "";
+                    //zeroBond.DataContext = 0.0;
                     zeroBond.Visibility = Visibility.Collapsed;
+                    color_scale2.Visibility = Visibility.Visible;
+                    color_scale1.Visibility = Visibility.Collapsed;
+                    zeroBondSlider.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    zeroBond.Content = "0";
-                    zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
+                    //zeroBond.Content = "0";
+                    //zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
                     zeroBond.Visibility = Visibility.Visible;
+                    color_scale1.Visibility = Visibility.Visible;
+                    (color_scale1.Fill as LinearGradientBrush).GradientStops[1].Offset = 1.0 - _imageData[fileNameBox.SelectedIndex].zeroIntensity;
+                    color_scale2.Visibility = Visibility.Collapsed;
+                    zeroBondSlider.Visibility = Visibility.Visible;
                 }
             }
         }
@@ -187,6 +201,14 @@ namespace BOLD
 
 
         }
+        public int getZeroPointSlider()
+        {
+            if (_imageData.Count==0 || _imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
+                return 0;
+            else
+                return
+                    Convert.ToInt32((double)(zeroBond.DataContext) * (_imageData[fileNameBox.SelectedIndex].maxIntensity - _imageData[fileNameBox.SelectedIndex].minIntensity)+ _imageData[fileNameBox.SelectedIndex].minIntensity);
+        }
         // controler for image resize checkbox
         bool _checkedResize = false;
         public bool CheckedResize
@@ -196,10 +218,11 @@ namespace BOLD
             {
                 if (_imageData.Count == 0)
                     return;
+                // insert image to image control
+                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1, getZeroPointSlider());
+                // resize if needed
                 if (resize.IsChecked ?? true)
                     image.Source = new CroppedBitmap(image.Source as BitmapSource, _imageData[fileNameBox.SelectedIndex].selection);
-                else
-                    image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1);
             }
         }
         private void resize_Checked(object sender, RoutedEventArgs e)
@@ -358,6 +381,14 @@ namespace BOLD
             mousePos = st.Transform(mousePos);
             mousePos = rt.Transform(mousePos);
             return mousePos;
+        }
+
+
+        private void zeroBondSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            zeroBond.DataContext = (sender as Slider).Value;
+            zeroBond.Content = Convert.ToString(getZeroPointSlider());
+            NumSlice = _numSlice;
         }
     }
 
