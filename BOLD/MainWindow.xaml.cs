@@ -176,7 +176,7 @@ namespace BOLD
                     //zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
                     zeroBond.Visibility = Visibility.Visible;
                     color_scale1.Visibility = Visibility.Visible;
-                    (color_scale1.Fill as LinearGradientBrush).GradientStops[1].Offset = 1.0 - _imageData[fileNameBox.SelectedIndex].zeroIntensity;
+                    //(color_scale1.Fill as LinearGradientBrush).GradientStops[1].Offset = 1.0 - _imageData[fileNameBox.SelectedIndex].zeroIntensity;
                     color_scale2.Visibility = Visibility.Collapsed;
                     zeroBondSlider.Visibility = Visibility.Visible;
                 }

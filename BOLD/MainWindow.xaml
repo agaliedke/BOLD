@@ -63,7 +63,7 @@
                         <Rectangle.Fill>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Blue" Offset="1"/>
-                                <GradientStop Color="Black" Offset="0.5"/>
+                                <GradientStop Color="Black" Offset="{Binding DataContext, ConverterParameter=1-values[0], Converter={StaticResource JScriptConverter}, ElementName=zeroBond}"/>
                                 <GradientStop Color="Red"/>
                             </LinearGradientBrush>
                         </Rectangle.Fill>
@@ -95,7 +95,7 @@
                             </Label.DataContext>
                         </Label>
                         <Slider x:Name="zeroBondSlider" Orientation="Vertical" Grid.Column="1" Maximum="0.999" TickFrequency="0.001" 
-                                Value="{Binding DataContext, ElementName=zeroBond, Mode=OneWay}" Minimum="0.001" Visibility="Collapsed" ValueChanged="zeroBondSlider_ValueChanged" LargeChange="0.1" />
+                                Value="{Binding DataContext, ElementName=zeroBond, Mode=OneWay}" Minimum="0.001" Visibility="Collapsed" ValueChanged="zeroBondSlider_ValueChanged" LargeChange="0.1" SmallChange="0.01" />
                     </Grid>
                 </DockPanel>
             </DockPanel>
