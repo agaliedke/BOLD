@@ -7,6 +7,7 @@ using System.IO;
 using System.Windows.Input;
 using System.Windows.Media;
 using System;
+using System.Windows.Shapes;
 
 namespace BOLD
 {
@@ -49,8 +50,6 @@ namespace BOLD
                 zeroBond.Content = "0";
                 zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
             }
-                // update Image
-                //NumSlice = _numSlice;
         }
         private void ReplaceImage(ImageSlice slice, string sliceName)
         {
@@ -68,6 +67,7 @@ namespace BOLD
         private void add_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "TXT files (*.txt)|*.txt|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 // load image from file
@@ -77,7 +77,7 @@ namespace BOLD
                 // update text field
                 txtNum.Text = _numSlice.ToString();
 
-                AddImage(slice, Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+                AddImage(slice, System.IO.Path.GetFileNameWithoutExtension(openFileDialog.FileName));
 
                 // Activate difference button if at least 2 images are added
                 if (_imageData.Count >= 2)
@@ -101,7 +101,7 @@ namespace BOLD
                 // update text field
                 txtNum.Text = _numSlice.ToString();
 
-                ReplaceImage(slice, Path.GetFileNameWithoutExtension(openFileDialog.FileName));
+                ReplaceImage(slice, System.IO.Path.GetFileNameWithoutExtension(openFileDialog.FileName));
             }
         }
         private void new_Click(object sender, RoutedEventArgs e)
@@ -119,11 +119,29 @@ namespace BOLD
             if (fileNameBox.SelectedIndex == -1)
                 throw new System.Exception("No image selected, cannot save!");
             SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "TXT files (*.txt)|*.txt|All files (*.*)|*.*";
             if (saveFileDialog.ShowDialog() == true)
             {
                 _imageData[fileNameBox.SelectedIndex].SaveImage(saveFileDialog.FileName);
             }
         }
+        private void save_PNG_Click(object sender, RoutedEventArgs e)
+        {
+            if (fileNameBox.SelectedIndex == -1)
+                throw new System.Exception("No image selected, cannot save!");
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "PNG files (*.PNG)|*.png|All files (*.*)|*.*";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                using (var fileStream = new FileStream(saveFileDialog.FileName, FileMode.Create))
+                {
+                    BitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(transformBitmap() as BitmapSource));
+                    encoder.Save(fileStream);
+                }
+            }
+        }
+
         private void about_Click(object sender, RoutedEventArgs e)
         {
             var about = new About();
@@ -373,7 +391,11 @@ namespace BOLD
                 }
             }
         }
-        // transforming mouse position invers to transformation of image object
+        /// <summary>
+        /// transforming mouse position invers to transformation of image object
+        /// </summary>
+        /// <param name="mousePos">initial position to be transformed</param>
+        /// <returns>transformed position</returns>
         private Point transformMouse(Point mousePos)
         {
             var rt = new RotateTransform(-90, image.ActualWidth / 2.0, image.ActualHeight / 2.0);
@@ -382,7 +404,69 @@ namespace BOLD
             mousePos = rt.Transform(mousePos);
             return mousePos;
         }
+        /// <summary>
+        /// function builds image plot into canvas and convert them to ImageSource
+        /// </summary>
+        /// <returns>ImageSource, which can be then saved as PNG file</returns>
+        private ImageSource transformBitmap()
+        {
+            
+            // build data image 
+            var newimage = new Image();
+            newimage.Source = image.Source;
+            newimage.Width = (image.Source as BitmapSource).PixelWidth;
+            newimage.Height = (image.Source as BitmapSource).PixelHeight;
+            newimage.RenderTransform = image.RenderTransform;
 
+            // build scale 
+            var newscale = new Rectangle();
+            Rectangle color_scale;
+            if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
+                color_scale = color_scale2;
+            else
+                color_scale = color_scale1;
+            newscale.Stroke = color_scale.Stroke;
+            newscale.StrokeThickness = color_scale.StrokeThickness;
+            newscale.Width = color_scale.Width;
+            newscale.Height = newimage.Height;
+            newscale.Fill = color_scale.Fill;
+
+            // build scale labels
+            var scalelabels = new Grid();
+            scalelabels.Width = scale.ActualWidth;
+            scalelabels.Height = newimage.Height;
+            var label1 = new Label();
+            var label2 = new Label();
+            var label3 = new Label();
+            label1.Content = upperBond.Content;
+            label1.VerticalAlignment = upperBond.VerticalAlignment;
+            label2.Content = lowerBond.Content;
+            label2.VerticalAlignment = lowerBond.VerticalAlignment;
+            label3.Content = zeroBond.Content;
+            label3.VerticalAlignment = zeroBond.VerticalAlignment;
+            label3.Margin = new Thickness(0, 0, 0, zeroBond.Margin.Bottom * scalelabels.Height / scale.ActualHeight);
+            scalelabels.Children.Add(label1);
+            scalelabels.Children.Add(label2);
+            scalelabels.Children.Add(label3);
+
+            // create container for all objects
+            Canvas container = new Canvas();
+            container.Children.Add(newimage);
+            container.Children.Add(newscale);
+            container.Children.Add(scalelabels);
+            Canvas.SetLeft(newscale, newimage.Width);
+            Canvas.SetLeft(scalelabels, newimage.Width + newscale.Width);
+            // redraw whole canvas to update children
+            container.Arrange(new Rect(0,0,newimage.Width+newscale.Width, newimage.Height));
+
+            // render the result to a new bitmap. 
+            var target = new RenderTargetBitmap((int)(newimage.Width + newscale.Width + scalelabels.Width), (int)newimage.Height, 96, 96, PixelFormats.Pbgra32);
+
+            target.Render(container);
+
+            return target;
+
+        }
 
         private void zeroBondSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -390,6 +474,7 @@ namespace BOLD
             zeroBond.Content = Convert.ToString(getZeroPointSlider());
             NumSlice = _numSlice;
         }
+
     }
 
 }

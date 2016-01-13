@@ -168,7 +168,7 @@ namespace BOLD
             colors.Add(Colors.Blue);
             var myPalette = new BitmapPalette(colors);
             var pixelFormat = PixelFormats.Rgb24;
-            return BitmapSource.Create(xSize, ySize, 300, 300, pixelFormat, null, pixelData, stride);
+            return BitmapSource.Create(xSize, ySize, 96, 96, pixelFormat, null, pixelData, stride);
         }
         /// <summary>
         /// Saves image to file
