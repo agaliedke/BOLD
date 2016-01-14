@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System;
 using System.Windows.Shapes;
 
+
 namespace BOLD
 {
     /// <summary>
@@ -16,6 +17,7 @@ namespace BOLD
     /// </summary>
     public partial class MainWindow : Window
     {
+        public const int FONT_HEIGHT = 12;
         public MainWindow()
         {
             InitializeComponent();
@@ -43,11 +45,11 @@ namespace BOLD
             if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
             {
                 zeroBond.Content = "";
-                zeroBond.DataContext = 0.0;
+                zeroBond.DataContext = 0.5;
             }
             else
             {
-                zeroBond.Content = "0";
+                zeroBond.Content = Convert.ToString(getZeroPointSlider());
                 zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
             }
         }
@@ -148,6 +150,37 @@ namespace BOLD
             about.Show();
         }
 
+        private void MenuItem_Grayscale(object sender, RoutedEventArgs e)
+        {
+            checked_rb.IsChecked = false;
+            checked_rgb.IsChecked = false;
+            color_scale_gray.Visibility = Visibility.Visible;
+            color_scale_rb.Visibility = Visibility.Collapsed;
+            color_scale_rgb.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void MenuItem_RedBlue(object sender, RoutedEventArgs e)
+        {
+            checked_gray.IsChecked = false;
+            checked_rgb.IsChecked = false;
+            color_scale_gray.Visibility = Visibility.Collapsed;
+            color_scale_rb.Visibility = Visibility.Visible;
+            color_scale_rgb.Visibility = Visibility.Collapsed;
+
+        }
+
+        private void MenuItem_Click_RGB(object sender, RoutedEventArgs e)
+        {
+            checked_gray.IsChecked = false;
+            checked_rb.IsChecked = false;
+            color_scale_gray.Visibility = Visibility.Collapsed;
+            color_scale_rb.Visibility = Visibility.Collapsed;
+            color_scale_rgb.Visibility = Visibility.Visible;
+
+        }
+
+
         // List of images
         private List<ImageSlice> _imageData = new List<ImageSlice>();
         
@@ -181,21 +214,17 @@ namespace BOLD
                 // this will be then used by xaml and MarginConverter
                 if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
                 {
-                    //zeroBond.Content = "";
-                    //zeroBond.DataContext = 0.0;
                     zeroBond.Visibility = Visibility.Collapsed;
-                    color_scale2.Visibility = Visibility.Visible;
-                    color_scale1.Visibility = Visibility.Collapsed;
+                    color_scale_gray.Visibility = Visibility.Collapsed;
+                    color_scale_rb.Visibility = Visibility.Collapsed;
+                    color_scale_rgb.Visibility = Visibility.Collapsed;
                     zeroBondSlider.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    //zeroBond.Content = "0";
-                    //zeroBond.DataContext = _imageData[fileNameBox.SelectedIndex].zeroIntensity;
                     zeroBond.Visibility = Visibility.Visible;
-                    color_scale1.Visibility = Visibility.Visible;
-                    //(color_scale1.Fill as LinearGradientBrush).GradientStops[1].Offset = 1.0 - _imageData[fileNameBox.SelectedIndex].zeroIntensity;
-                    color_scale2.Visibility = Visibility.Collapsed;
+                    //color_scale_rb.Visibility = Visibility.Visible;
+                    //color_scale_gray.Visibility = Visibility.Collapsed;
                     zeroBondSlider.Visibility = Visibility.Visible;
                 }
             }
@@ -405,7 +434,7 @@ namespace BOLD
             return mousePos;
         }
         /// <summary>
-        /// function builds image plot into canvas and convert them to ImageSource
+        /// Function builds image plot into canvas together with color scale and convert them to ImageSource
         /// </summary>
         /// <returns>ImageSource, which can be then saved as PNG file</returns>
         private ImageSource transformBitmap()
@@ -422,9 +451,18 @@ namespace BOLD
             var newscale = new Rectangle();
             Rectangle color_scale;
             if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
-                color_scale = color_scale2;
+                color_scale = color_scale_gray;
             else
-                color_scale = color_scale1;
+            {
+                if (checked_gray.IsChecked)
+                    color_scale = color_scale_gray;
+                else if (checked_rb.IsChecked)
+                    color_scale = color_scale_rb;
+                else if (checked_rgb.IsChecked)
+                    color_scale = color_scale_rgb;
+                else
+                    color_scale = color_scale_gray;
+            }
             newscale.Stroke = color_scale.Stroke;
             newscale.StrokeThickness = color_scale.StrokeThickness;
             newscale.Width = color_scale.Width;
@@ -444,7 +482,7 @@ namespace BOLD
             label2.VerticalAlignment = lowerBond.VerticalAlignment;
             label3.Content = zeroBond.Content;
             label3.VerticalAlignment = zeroBond.VerticalAlignment;
-            label3.Margin = new Thickness(0, 0, 0, zeroBond.Margin.Bottom * scalelabels.Height / scale.ActualHeight);
+            label3.Margin = new Thickness(0, 0, 0, (double)zeroBond.DataContext * scalelabels.Height - FONT_HEIGHT);
             scalelabels.Children.Add(label1);
             scalelabels.Children.Add(label2);
             scalelabels.Children.Add(label3);
@@ -470,9 +508,11 @@ namespace BOLD
 
         private void zeroBondSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            zeroBond.DataContext = (sender as Slider).Value;
+            if (zeroBondSlider.DataContext!=null)
+                zeroBond.DataContext = (sender as Slider).Value;
             zeroBond.Content = Convert.ToString(getZeroPointSlider());
             NumSlice = _numSlice;
+            zeroBondSlider.DataContext = false;
         }
 
     }

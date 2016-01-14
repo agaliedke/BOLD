@@ -101,7 +101,7 @@ namespace BOLD
                     minIntensity = word;
             }
             if (minIntensity > 0)
-                zeroIntensity = -1.0;
+                zeroIntensity = 0.5; 
             else
                 zeroIntensity = -minIntensity / (double)(maxIntensity - minIntensity);
             // initialize selection
@@ -134,6 +134,8 @@ namespace BOLD
         /// <returns>BitmapSource with image form this class.</returns>
         public BitmapSource GetImage(int i_slice, int zeroPoint)
         {
+            // TO DO: implement grayscal and rgb reaction on slider
+
             int stride = ySize * 3 + (ySize % 4);
             byte[] pixelData = new byte[xSize * stride];
             for (int i = 0; i < xSize; i++)
@@ -158,7 +160,11 @@ namespace BOLD
                     }
                     else
                     {
-                        pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride +1] = pixelData[j * 3 + i * stride+2] = color;
+                        pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride + 1] = pixelData[j * 3 + i * stride + 2] = color;
+                        //if (sliceData[i, j, i_slice] >= zeroPoint)
+                        //    pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride + 1] = pixelData[j * 3 + i * stride + 2] = Convert.ToByte(color * sliceData[i, j, i_slice] / (double)zeroPoint * 0.5);
+                        //else
+                        //    pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride + 1] = pixelData[j * 3 + i * stride + 2] = Convert.ToByte(255-color * sliceData[i, j, i_slice] / (double)zeroPoint * 0.5);
 
                     }
                 }
@@ -242,7 +248,7 @@ namespace BOLD
                             c.maxIntensity = c.sliceData[i, j, k];
                     }
             if (c.minIntensity > 0)
-                c.zeroIntensity = -1.0;
+                c.zeroIntensity = 0.5;
             else
                 c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
 
@@ -275,7 +281,7 @@ namespace BOLD
                             c.maxIntensity = c.sliceData[i, j, k];
                     }
             if (c.minIntensity > 0)
-                c.zeroIntensity = -1.0;
+                c.zeroIntensity = 0.5;
             else
                 c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
             return c;

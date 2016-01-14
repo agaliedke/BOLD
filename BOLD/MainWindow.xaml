@@ -29,6 +29,11 @@
                 <MenuItem Header="_Exit" Click="exit_Click" />
 
             </MenuItem>
+            <MenuItem Header="Colors">
+                <MenuItem x:Name="checked_gray" Header="_Grayscale" IsCheckable="true" Click="MenuItem_Grayscale" IsChecked="True" />
+                <MenuItem x:Name="checked_rb" Header="_RedBlue" IsCheckable="true" Click="MenuItem_RedBlue"/>
+                <MenuItem x:Name="checked_rgb" Header="R_GB" IsCheckable="true" Click="MenuItem_Click_RGB" />
+            </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Click="about_Click" />
             </MenuItem>
@@ -60,7 +65,16 @@
                     </StackPanel>
                 </GroupBox>
                 <DockPanel x:Name="color_panel" DockPanel.Dock="Top">
-                    <Rectangle x:Name="color_scale1" Stroke="Black"  StrokeThickness="2" Width="40" Visibility="Collapsed">
+                    <Rectangle x:Name="color_scale_gray" Stroke="Black"  StrokeThickness="2" Width="40" Visibility="Visible">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="1"/>
+                                <GradientStop Color="White"/>
+                                <GradientStop Color="Gray" Offset="{Binding DataContext, ConverterParameter=1-values[0], Converter={StaticResource JScriptConverter}, ElementName=zeroBond}"/>
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <Rectangle x:Name="color_scale_rb" Stroke="Black"  StrokeThickness="2" Width="40" Visibility="Collapsed">
                         <Rectangle.Fill>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Blue" Offset="1"/>
@@ -69,14 +83,18 @@
                             </LinearGradientBrush>
                         </Rectangle.Fill>
                     </Rectangle>
-                    <Rectangle x:Name="color_scale2" Stroke="Black"  StrokeThickness="2" Width="40" Visibility="Visible">
+                    <Rectangle x:Name="color_scale_rgb" Stroke="Black"  StrokeThickness="2" Width="40" Visibility="Collapsed">
                         <Rectangle.Fill>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                                <GradientStop Color="Black" Offset="1"/>
-                                <GradientStop Color="White"/>
+                                <GradientStop Color="Blue" Offset="1"/>
+                                <GradientStop Color="Cyan" Offset="{Binding DataContext, ConverterParameter=1-values[0]/2, Converter={StaticResource JScriptConverter}, ElementName=zeroBond}"/>
+                                <GradientStop Color="Lime" Offset="{Binding DataContext, ConverterParameter=1-values[0], Converter={StaticResource JScriptConverter}, ElementName=zeroBond}"/>
+                                <GradientStop Color="Yellow" Offset="{Binding DataContext, ConverterParameter=1-(0.5+values[0]/2), Converter={StaticResource JScriptConverter}, ElementName=zeroBond}"/>
+                                <GradientStop Color="Red"/>
                             </LinearGradientBrush>
                         </Rectangle.Fill>
                     </Rectangle>
+
                     <Grid x:Name="scale" DockPanel.Dock="Left">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
@@ -84,7 +102,7 @@
                         </Grid.ColumnDefinitions>
                         <Label x:Name="upperBond" Content="" VerticalAlignment="Top" />
                         <Label x:Name="lowerBond" Content="" VerticalAlignment="Bottom" />
-                        <Label x:Name="zeroBond" Content="0" VerticalAlignment="Bottom" Visibility="Collapsed" >
+                        <Label x:Name="zeroBond" Content="" VerticalAlignment="Bottom" Visibility="Collapsed" >
                             <Label.Margin>
                                 <MultiBinding Converter="{StaticResource MarginConverter}">
                                     <Binding Path="ActualHeight"  ElementName="color_panel"></Binding>
@@ -92,11 +110,15 @@
                                 </MultiBinding>
                             </Label.Margin>
                             <Label.DataContext>
-                                <System:Double>-1</System:Double>
+                                <System:Double>0.5</System:Double>
                             </Label.DataContext>
                         </Label>
                         <Slider x:Name="zeroBondSlider" Orientation="Vertical" Grid.Column="1" Maximum="0.999" TickFrequency="0.001" 
-                                Value="{Binding DataContext, ElementName=zeroBond, Mode=OneWay}" Minimum="0.001" Visibility="Collapsed" ValueChanged="zeroBondSlider_ValueChanged" LargeChange="0.1" SmallChange="0.01" />
+                                Value="{Binding DataContext, ElementName=zeroBond}" Minimum="0.001" Visibility="Visible" ValueChanged="zeroBondSlider_ValueChanged" LargeChange="0.1" SmallChange="0.01" >
+                            <Slider.DataContext>
+                                <System:Boolean>true</System:Boolean>
+                            </Slider.DataContext>
+                        </Slider>
                     </Grid>
                 </DockPanel>
             </DockPanel>
