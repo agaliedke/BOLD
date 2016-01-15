@@ -131,12 +131,13 @@ namespace BOLD
         /// </summary>
         /// <param name="i_slice">number of slice to return</param>
         /// <param name="zeroPoint">separation between red and blue color</param>
+        /// <param name="paletteBrush">color palette taken e.g. from Rectangle.Fill source</param>
         /// <returns>BitmapSource with image form this class.</returns>
-        public BitmapSource GetImage(int i_slice, int zeroPoint)
+        public BitmapSource GetImage(int i_slice, int zeroPoint, LinearGradientBrush paletteBrush)
         {
             // TO DO: implement grayscal and rgb reaction on slider
 
-            int stride = ySize * 3 + (ySize % 4);
+            int stride = ySize  + (ySize % 4);
             byte[] pixelData = new byte[xSize * stride];
             for (int i = 0; i < xSize; i++)
                 for (int j = 0; j < ySize; j++)
@@ -144,37 +145,16 @@ namespace BOLD
                     byte color = sliceData[i, j, i_slice] == 0 ? (byte)0 :
                         (byte)(Math.Round((sliceData[i, j, i_slice] - minIntensity) / (double)(maxIntensity - minIntensity) * 255.0));
 
-                    if (minIntensity < 0)
-                    {
-                        if (sliceData[i, j, i_slice] >= zeroPoint)
-                        {
-                            pixelData[j * 3 + i * stride] = color;
-                            pixelData[j * 3 + i * stride + 2] = 0;
-                        }
-                        else
-                        {
-                            pixelData[j * 3 + i * stride] = 0;
-                            pixelData[j * 3 + i * stride + 2] = Convert.ToByte(255 - color);
-                        }
-                        pixelData[j * 3 + i * stride + 1] = 0;
-                    }
-                    else
-                    {
-                        pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride + 1] = pixelData[j * 3 + i * stride + 2] = color;
-                        //if (sliceData[i, j, i_slice] >= zeroPoint)
-                        //    pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride + 1] = pixelData[j * 3 + i * stride + 2] = Convert.ToByte(color * sliceData[i, j, i_slice] / (double)zeroPoint * 0.5);
-                        //else
-                        //    pixelData[j * 3 + i * stride] = pixelData[j * 3 + i * stride + 1] = pixelData[j * 3 + i * stride + 2] = Convert.ToByte(255-color * sliceData[i, j, i_slice] / (double)zeroPoint * 0.5);
 
-                    }
+                        pixelData[j + i * stride] =  color;
                 }
-            List<Color> colors = new List<Color>();
-            colors.Add(Colors.Red);
-            colors.Add(Colors.Green);
-            colors.Add(Colors.Blue);
-            var myPalette = new BitmapPalette(colors);
-            var pixelFormat = PixelFormats.Rgb24;
-            return BitmapSource.Create(xSize, ySize, 96, 96, pixelFormat, null, pixelData, stride);
+            Color col = GradientStopCollectionExtensions.GetRelativeColor(paletteBrush.GradientStops, 0.25);
+            col = GradientStopCollectionExtensions.GetRelativeColor(paletteBrush.GradientStops, 0.75);
+            var myPalette = new BitmapPalette(
+                Enumerable.Range(0, 256).Select(c => GradientStopCollectionExtensions.GetRelativeColor(paletteBrush.GradientStops, 1-c/255.0)).ToList()
+                );
+            var pixelFormat = PixelFormats.Indexed8;
+            return BitmapSource.Create(xSize, ySize, 96, 96, pixelFormat, myPalette, pixelData, stride);
         }
         /// <summary>
         /// Saves image to file

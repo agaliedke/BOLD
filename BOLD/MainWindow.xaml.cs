@@ -22,6 +22,8 @@ namespace BOLD
         {
             InitializeComponent();
             txtNum.Text = _numSlice.ToString();
+            color_scale = color_scale_gray;
+
         }
 
         // Menu items controlers
@@ -149,7 +151,7 @@ namespace BOLD
             var about = new About();
             about.Show();
         }
-
+        private Rectangle color_scale;
         private void MenuItem_Grayscale(object sender, RoutedEventArgs e)
         {
             checked_rb.IsChecked = false;
@@ -157,7 +159,8 @@ namespace BOLD
             color_scale_gray.Visibility = Visibility.Visible;
             color_scale_rb.Visibility = Visibility.Collapsed;
             color_scale_rgb.Visibility = Visibility.Collapsed;
-
+            color_scale = color_scale_gray;
+            NumSlice = _numSlice;
         }
 
         private void MenuItem_RedBlue(object sender, RoutedEventArgs e)
@@ -167,7 +170,8 @@ namespace BOLD
             color_scale_gray.Visibility = Visibility.Collapsed;
             color_scale_rb.Visibility = Visibility.Visible;
             color_scale_rgb.Visibility = Visibility.Collapsed;
-
+            color_scale = color_scale_rb;
+            NumSlice = _numSlice;
         }
 
         private void MenuItem_Click_RGB(object sender, RoutedEventArgs e)
@@ -177,7 +181,8 @@ namespace BOLD
             color_scale_gray.Visibility = Visibility.Collapsed;
             color_scale_rb.Visibility = Visibility.Collapsed;
             color_scale_rgb.Visibility = Visibility.Visible;
-
+            color_scale = color_scale_rgb;
+            NumSlice = _numSlice;
         }
 
 
@@ -266,7 +271,7 @@ namespace BOLD
                 if (_imageData.Count == 0)
                     return;
                 // insert image to image control
-                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1, getZeroPointSlider());
+                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1, getZeroPointSlider(), color_scale.Fill as LinearGradientBrush);
                 // resize if needed
                 if (resize.IsChecked ?? true)
                     image.Source = new CroppedBitmap(image.Source as BitmapSource, _imageData[fileNameBox.SelectedIndex].selection);
@@ -449,20 +454,7 @@ namespace BOLD
 
             // build scale 
             var newscale = new Rectangle();
-            Rectangle color_scale;
-            if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
-                color_scale = color_scale_gray;
-            else
-            {
-                if (checked_gray.IsChecked)
-                    color_scale = color_scale_gray;
-                else if (checked_rb.IsChecked)
-                    color_scale = color_scale_rb;
-                else if (checked_rgb.IsChecked)
-                    color_scale = color_scale_rgb;
-                else
-                    color_scale = color_scale_gray;
-            }
+ 
             newscale.Stroke = color_scale.Stroke;
             newscale.StrokeThickness = color_scale.StrokeThickness;
             newscale.Width = color_scale.Width;

@@ -67,6 +67,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="GradientStopCollectionExtensions.cs" />
     <Compile Include="ImageSlice.cs" />
     <Compile Include="JScriptConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
