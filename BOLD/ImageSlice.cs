@@ -204,8 +204,8 @@ namespace BOLD
             for (int i = r.X < 0 ? 0 : r.X; i < (r.X + r.Width > xSize ? xSize : r.X + r.Width) ; i++)
                 for (int j = r.Y < 0 ? 0 : r.Y ; j < (r.Y + r.Height > ySize ? ySize : r.Y + r.Height) ; j++)
                 {
-                    avg += sliceData[i, j, i_slice];
-                    std += (sliceData[i, j, i_slice] * sliceData[i, j, i_slice]);
+                    avg += sliceData[i, j, i_slice-1];
+                    std += (sliceData[i, j, i_slice-1] * sliceData[i, j, i_slice-1]);
                 }
             avg /= r.Width * r.Height;
             std = Math.Sqrt(std / r.Width / r.Height - avg * avg);
