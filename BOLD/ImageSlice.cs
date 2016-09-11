@@ -106,23 +106,32 @@ namespace BOLD
                 zeroIntensity = -minIntensity / (double)(maxIntensity - minIntensity);
             // initialize selection
             selection = new Int32Rect();
-            int minX, maxX, minY, maxY;
-            minX = xSize; maxX = 0; minY = ySize; maxY = 0;
-            for (int i = 0; i < xSize; i++)
-                for (int j = 0; j < ySize; j++)
-                {
-                    if (sliceData[i, j, 0] != 0)
+            int minX, maxX, minY, maxY, slice_index=0;
+            do
+            {
+                minX = xSize; maxX = 0; minY = ySize; maxY = 0;
+                for (int i = 0; i < xSize; i++)
+                    for (int j = 0; j < ySize; j++)
                     {
-                        if (minX > i)
-                            minX = i;
-                        if (maxX < i)
-                            maxX = i;
-                        if (minY > j)
-                            minY = j;
-                        if (maxY < j)
-                            maxY = j;
+                        if (sliceData[i, j, slice_index] != 0)
+                        {
+                            if (minX > i)
+                                minX = i;
+                            if (maxX < i)
+                                maxX = i;
+                            if (minY > j)
+                                minY = j;
+                            if (maxY < j)
+                                maxY = j;
+                        }
                     }
-                }
+                if (maxX < minX)
+                    minX = 0;
+                if (maxY < minY)
+                    minY = 0;
+                slice_index++;
+            } while (minX == maxX && minY == maxY && slice_index<zSize+1);
+
             selection = new Int32Rect(minY, minX, maxY - minY, maxX - minX);
 
         }
