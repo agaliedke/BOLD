@@ -275,6 +275,29 @@ namespace BOLD
                 c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
             return c;
         }
+        public static ImageSlice operator /(ImageSlice c1, double c2)
+        {
+            ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
+            c.sliceFileName = c1.sliceFileName + "/div";
+            var tmp = c.minIntensity;
+            c.minIntensity = c.maxIntensity;
+            c.maxIntensity = tmp;
+            for (int i = 0; i < c.xSize; i++)
+                for (int j = 0; j < c.ySize; j++)
+                    for (int k = 0; k < c.zSize; k++)
+                    {
+                        c.sliceData[i, j, k] = Convert.ToInt32(c.sliceData[i, j, k]/c2);
+                        if (c.sliceData[i, j, k] < c.minIntensity)
+                            c.minIntensity = c.sliceData[i, j, k];
+                        if (c.sliceData[i, j, k] > c.maxIntensity)
+                            c.maxIntensity = c.sliceData[i, j, k];
+                    }
+            if (c.minIntensity > 0)
+                c.zeroIntensity = 0.5;
+            else
+                c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
+            return c;
+        }
 
     }
 }

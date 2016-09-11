@@ -90,6 +90,8 @@ namespace BOLD
                     differenceBA.IsEnabled = true;
                     sum.IsEnabled = true;
                 }
+                if (_imageData.Count >= 3)
+                    avg3.IsEnabled = true;
             }
         }
         private void replace_Click(object sender, RoutedEventArgs e)
@@ -116,6 +118,7 @@ namespace BOLD
             differenceAB.IsEnabled = false;
             differenceBA.IsEnabled = false;
             sum.IsEnabled = false;
+            avg3.IsEnabled = false;
             txtNum.Text = "0";
         }
         private void save_As_Click(object sender, RoutedEventArgs e)
@@ -330,6 +333,8 @@ namespace BOLD
                 differenceBA.IsEnabled = false;
                 sum.IsEnabled = false;
             }
+            if (_imageData.Count < 3)
+                avg3.IsEnabled = false;
 
         }
 
@@ -507,6 +512,13 @@ namespace BOLD
             zeroBondSlider.DataContext = false;
         }
 
+        private void avg3_Click(object sender, RoutedEventArgs e)
+        {
+            ImageSlice slice = (_imageData[0] + _imageData[1] + _imageData[2])/3;
+
+            AddImage(slice, slice.sliceFileName);
+
+        }
     }
 
 }
