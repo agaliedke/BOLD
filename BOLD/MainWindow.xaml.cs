@@ -305,17 +305,17 @@ namespace BOLD
         // buttons of different operation controllers
         private void difference_ClickAB(object sender, RoutedEventArgs e)
         {
-            ImageSlice slice = _imageData[0] - _imageData[1];
+            ImageSlice slice = _imageData[_imageData.Count - 2] - _imageData[_imageData.Count - 1];
             AddImage(slice, slice.sliceFileName);
         }
         private void difference_ClickBA(object sender, RoutedEventArgs e)
         {
-            ImageSlice slice = _imageData[1] - _imageData[0];
+            ImageSlice slice = _imageData[_imageData.Count - 1] - _imageData[_imageData.Count - 2];
             AddImage(slice, slice.sliceFileName);
         }
         private void sum_Click(object sender, RoutedEventArgs e)
         {
-            ImageSlice slice = _imageData[0] + _imageData[1];
+            ImageSlice slice = _imageData[_imageData.Count - 2] + _imageData[_imageData.Count - 1];
             AddImage(slice, slice.sliceFileName);
         }
 
@@ -514,7 +514,7 @@ namespace BOLD
 
         private void avg3_Click(object sender, RoutedEventArgs e)
         {
-            ImageSlice slice = (_imageData[0] + _imageData[1] + _imageData[2])/3;
+            ImageSlice slice = (_imageData[_imageData.Count-3] + _imageData[_imageData.Count - 2] + _imageData[_imageData.Count - 1])/3;
 
             AddImage(slice, slice.sliceFileName);
 
