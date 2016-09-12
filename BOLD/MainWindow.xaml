@@ -60,6 +60,7 @@
                 <GroupBox Header="Opierations" DockPanel.Dock="Top">
                     <StackPanel Orientation="Vertical">
                         <Button x:Name="differenceAB" VerticalAlignment="Top" Width="40" Content="A-B" Margin="0,0,0,0" Click="difference_ClickAB" IsEnabled="False" />
+                        <Button x:Name="differenceAB_A" VerticalAlignment="Top" Width="60" Content="(A-B)/A" Margin="0,0,0,0" Click="difference_ClickABA" IsEnabled="False" />
                         <Button x:Name="differenceBA" VerticalAlignment="Top" Width="40" Content="B-A" Margin="0,0,0,0" Click="difference_ClickBA" IsEnabled="False" />
                         <Button x:Name="sum" VerticalAlignment="Top" Width="40" Content="A+B" Margin="0,0,0,0" Click="sum_Click" IsEnabled="False" />
                         <Button x:Name="avg3" VerticalAlignment="Top" Width="60" Content="(A+B+C)/3" Margin="0,0,0,0" Click="avg3_Click" IsEnabled="False" />

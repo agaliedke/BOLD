@@ -84,14 +84,7 @@ namespace BOLD
                 AddImage(slice, System.IO.Path.GetFileNameWithoutExtension(openFileDialog.FileName));
 
                 // Activate difference button if at least 2 images are added
-                if (_imageData.Count >= 2)
-                {
-                    differenceAB.IsEnabled = true;
-                    differenceBA.IsEnabled = true;
-                    sum.IsEnabled = true;
-                }
-                if (_imageData.Count >= 3)
-                    avg3.IsEnabled = true;
+                activate_deactivate_Buttons();
             }
         }
         private void replace_Click(object sender, RoutedEventArgs e)
@@ -115,10 +108,8 @@ namespace BOLD
             _imageData.Clear();
             fileNameBox.Items.Clear();
             image.Source = null;
-            differenceAB.IsEnabled = false;
-            differenceBA.IsEnabled = false;
-            sum.IsEnabled = false;
-            avg3.IsEnabled = false;
+            activate_deactivate_Buttons();
+
             txtNum.Text = "0";
         }
         private void save_As_Click(object sender, RoutedEventArgs e)
@@ -216,8 +207,8 @@ namespace BOLD
                 // if resize box is checked resize image and insert to image control
                 CheckedResize = resize.IsChecked.Value;
                 // change dataContent for Image: max and min intensity
-                upperBond.Content = _imageData[fileNameBox.SelectedIndex].maxIntensity.ToString();
-                lowerBond.Content = _imageData[fileNameBox.SelectedIndex].minIntensity.ToString();
+                upperBond.Content = (Math.Truncate(_imageData[fileNameBox.SelectedIndex].maxIntensity * 100d) / 100d).ToString();
+                lowerBond.Content = (Math.Truncate(_imageData[fileNameBox.SelectedIndex].minIntensity * 100d) / 100d).ToString();
                 // set DataContext for zeroIntensity
                 // this will be then used by xaml and MarginConverter
                 if (_imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
@@ -256,13 +247,16 @@ namespace BOLD
 
 
         }
-        public int getZeroPointSlider()
+        public double getZeroPointSlider()
         {
             if (_imageData.Count==0 || _imageData[fileNameBox.SelectedIndex].zeroIntensity == -1)
                 return 0;
             else
                 return
-                    Convert.ToInt32((double)(zeroBond.DataContext) * (_imageData[fileNameBox.SelectedIndex].maxIntensity - _imageData[fileNameBox.SelectedIndex].minIntensity)+ _imageData[fileNameBox.SelectedIndex].minIntensity);
+                    Math.Truncate((
+                        (double)(zeroBond.DataContext) * (
+                            _imageData[fileNameBox.SelectedIndex].maxIntensity - _imageData[fileNameBox.SelectedIndex].minIntensity
+                        ) + _imageData[fileNameBox.SelectedIndex].minIntensity)*100d)/100d;
         }
         // controler for image resize checkbox
         bool _checkedResize = false;
@@ -274,7 +268,7 @@ namespace BOLD
                 if (_imageData.Count == 0)
                     return;
                 // insert image to image control
-                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1, getZeroPointSlider(), color_scale.Fill as LinearGradientBrush);
+                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1, Convert.ToInt32(getZeroPointSlider()), color_scale.Fill as LinearGradientBrush);
                 // resize if needed
                 if (resize.IsChecked ?? true)
                     image.Source = new CroppedBitmap(image.Source as BitmapSource, _imageData[fileNameBox.SelectedIndex].selection);
@@ -307,18 +301,48 @@ namespace BOLD
         {
             ImageSlice slice = _imageData[_imageData.Count - 2] - _imageData[_imageData.Count - 1];
             AddImage(slice, slice.sliceFileName);
+            activate_deactivate_Buttons();
         }
         private void difference_ClickBA(object sender, RoutedEventArgs e)
         {
             ImageSlice slice = _imageData[_imageData.Count - 1] - _imageData[_imageData.Count - 2];
             AddImage(slice, slice.sliceFileName);
+            activate_deactivate_Buttons();
         }
         private void sum_Click(object sender, RoutedEventArgs e)
         {
             ImageSlice slice = _imageData[_imageData.Count - 2] + _imageData[_imageData.Count - 1];
             AddImage(slice, slice.sliceFileName);
+            activate_deactivate_Buttons();
         }
+        private void activate_deactivate_Buttons()
+        {
+            if (_imageData.Count<2)
+            {
+                differenceAB.IsEnabled = false;
+                differenceBA.IsEnabled = false;
+                differenceAB_A.IsEnabled = false;
+                sum.IsEnabled = false;
+                avg3.IsEnabled = false;
+            }
+            else if (_imageData.Count == 2)
+            {
+                differenceAB.IsEnabled = true;
+                differenceBA.IsEnabled = true;
+                differenceAB_A.IsEnabled = true;
+                sum.IsEnabled = true;
+                avg3.IsEnabled = false;
+            }
+            else
+            {
+                differenceAB.IsEnabled = true;
+                differenceBA.IsEnabled = true;
+                differenceAB_A.IsEnabled = true;
+                sum.IsEnabled = true;
+                avg3.IsEnabled = true;
 
+            }
+        }
         // remove button
         private void remove_Click(object sender, RoutedEventArgs e)
         {
@@ -327,14 +351,7 @@ namespace BOLD
             _imageData.RemoveAt(fileNameBox.SelectedIndex);
             fileNameBox.Items.RemoveAt(fileNameBox.SelectedIndex);
             image.Source = null;
-            if (_imageData.Count < 2)
-            {
-                differenceAB.IsEnabled = false;
-                differenceBA.IsEnabled = false;
-                sum.IsEnabled = false;
-            }
-            if (_imageData.Count < 3)
-                avg3.IsEnabled = false;
+            activate_deactivate_Buttons();
 
         }
 
@@ -517,6 +534,15 @@ namespace BOLD
             ImageSlice slice = (_imageData[_imageData.Count-3] + _imageData[_imageData.Count - 2] + _imageData[_imageData.Count - 1])/3;
 
             AddImage(slice, slice.sliceFileName);
+            activate_deactivate_Buttons();
+
+        }
+
+        private void difference_ClickABA(object sender, RoutedEventArgs e)
+        {
+            ImageSlice slice = (_imageData[_imageData.Count - 2] - _imageData[_imageData.Count - 1] ) / _imageData[_imageData.Count - 2];
+            AddImage(slice, slice.sliceFileName);
+            activate_deactivate_Buttons();
 
         }
     }

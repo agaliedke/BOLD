@@ -22,9 +22,9 @@ namespace BOLD
         public string realUnit { get; private set; }
         public string sliceName { get; private set; }
         public string sliceFileName { get; set; }
-        public int[,,] sliceData { get; private set; }
-        public int minIntensity { get; private set; }
-        public int maxIntensity { get; private set; }
+        public double[,,] sliceData { get; private set; }
+        public double minIntensity { get; private set; }
+        public double maxIntensity { get; private set; }
         public double zeroIntensity { get; private set; }
         public Int32Rect selection { get; private set; }
         public string header { get; private set; }
@@ -87,13 +87,13 @@ namespace BOLD
             if (words.Count() == 0)
                 throw new ArgumentException("ImageSlice", "Image data not found");
             // reading the contrast data
-            sliceData = new int[xSize, ySize, zSize];
+            sliceData = new double[xSize, ySize, zSize];
             maxIntensity = 0;
             minIntensity = Int32.MaxValue;
 
             for (int i = 0; i < words.Count(); i += 4)
             {
-                int word = Int32.Parse(words[i + 3]);
+                double word = Double.Parse(words[i + 3]);
                 sliceData[Int32.Parse(words[i]) - 1, Int32.Parse(words[i + 1]) - 1, Int32.Parse(words[i + 2]) - 1] = word;
                 if (maxIntensity < word)
                     maxIntensity = word;
@@ -222,7 +222,7 @@ namespace BOLD
             if (c1.xSize != c2.xSize || c1.ySize != c2.ySize || c1.zSize != c2.zSize)
                 throw new ArgumentOutOfRangeException("operator +: all sizes have to be the same");
             ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
-            c.sliceFileName = c1.sliceFileName + "+" + c2.sliceFileName;
+            c.sliceFileName = "(" + c1.sliceFileName + "+" + c2.sliceFileName + ")"; ;
             var tmp = c.minIntensity;
             c.minIntensity = c.maxIntensity;
             c.maxIntensity = tmp;
@@ -255,7 +255,7 @@ namespace BOLD
                 throw new ArgumentOutOfRangeException("operator -", "all sizes have to be the same");
 
             ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
-            c.sliceFileName = c1.sliceFileName + "-" + c2.sliceFileName;
+            c.sliceFileName = "(" + c1.sliceFileName + "-" + c2.sliceFileName + ")";
             var tmp = c.minIntensity;
             c.minIntensity = c.maxIntensity;
             c.maxIntensity = tmp;
@@ -278,7 +278,7 @@ namespace BOLD
         public static ImageSlice operator /(ImageSlice c1, double c2)
         {
             ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
-            c.sliceFileName = c1.sliceFileName + "/div";
+            c.sliceFileName = "(" + c1.sliceFileName + "/3)";
             var tmp = c.minIntensity;
             c.minIntensity = c.maxIntensity;
             c.maxIntensity = tmp;
@@ -286,7 +286,35 @@ namespace BOLD
                 for (int j = 0; j < c.ySize; j++)
                     for (int k = 0; k < c.zSize; k++)
                     {
-                        c.sliceData[i, j, k] = Convert.ToInt32(c.sliceData[i, j, k]/c2);
+                        c.sliceData[i, j, k] = (c.sliceData[i, j, k]/c2);
+                        if (c.sliceData[i, j, k] < c.minIntensity)
+                            c.minIntensity = c.sliceData[i, j, k];
+                        if (c.sliceData[i, j, k] > c.maxIntensity)
+                            c.maxIntensity = c.sliceData[i, j, k];
+                    }
+            if (c.minIntensity > 0)
+                c.zeroIntensity = 0.5;
+            else
+                c.zeroIntensity = -c.minIntensity / (double)(c.maxIntensity - c.minIntensity);
+            return c;
+        }
+        public static ImageSlice operator /(ImageSlice c1, ImageSlice c2)
+        {
+            ImageSlice c = ObjectCopier.Clone<ImageSlice>(c1);
+            c.sliceFileName = "(" + c1.sliceFileName + "/" + c2.sliceFileName + ")";
+            var tmp = c.minIntensity;
+            c.minIntensity = c.maxIntensity;
+            c.maxIntensity = tmp;
+            for (int i = 0; i < c.xSize; i++)
+                for (int j = 0; j < c.ySize; j++)
+                    for (int k = 0; k < c.zSize; k++)
+                    {
+                        if (c2.sliceData[i, j, k]==0)
+                        {
+                            c.sliceData[i, j, k] = 0;
+                            continue;
+                        }
+                        c.sliceData[i, j, k] = (c.sliceData[i, j, k] / c2.sliceData[i, j, k]);
                         if (c.sliceData[i, j, k] < c.minIntensity)
                             c.minIntensity = c.sliceData[i, j, k];
                         if (c.sliceData[i, j, k] > c.maxIntensity)
