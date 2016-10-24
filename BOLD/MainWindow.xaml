@@ -29,13 +29,13 @@
                 <MenuItem Header="_Exit" Click="exit_Click" />
 
             </MenuItem>
-            <MenuItem Header="Colors">
+            <MenuItem Header="_Colors">
                 <MenuItem x:Name="checked_gray" Header="_Grayscale" IsCheckable="true" Click="MenuItem_Grayscale" IsChecked="True" />
                 <MenuItem x:Name="checked_rb" Header="_RedBlue" IsCheckable="true" Click="MenuItem_RedBlue"/>
                 <MenuItem x:Name="checked_rgb" Header="R_GB" IsCheckable="true" Click="MenuItem_Click_RGB" />
             </MenuItem>
-            <MenuItem Header="Set">
-                <MenuItem x:Name="minmax" Header="Set Min/Max" IsCheckable="False" Click="minmax_Click"/>
+            <MenuItem Header="_Set">
+                <MenuItem x:Name="minmax" Header="Set Scale Min/Max" IsCheckable="False" Click="minmax_Click"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About" Click="about_Click" />
