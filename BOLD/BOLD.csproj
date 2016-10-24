@@ -78,9 +78,16 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="MinMaxDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MarginConverter.cs" />
+    <Compile Include="MinMaxDialog.xaml.cs">
+      <DependentUpon>MinMaxDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ObjectCopier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

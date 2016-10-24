@@ -23,8 +23,8 @@ namespace BOLD
         public string sliceName { get; private set; }
         public string sliceFileName { get; set; }
         public double[,,] sliceData { get; private set; }
-        public double minIntensity { get; private set; }
-        public double maxIntensity { get; private set; }
+        public double minIntensity { get; set; }
+        public double maxIntensity { get; set; }
         public double zeroIntensity { get; private set; }
         public Int32Rect selection { get; private set; }
         public string header { get; private set; }

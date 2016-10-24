@@ -545,6 +545,20 @@ namespace BOLD
             activate_deactivate_Buttons();
 
         }
+
+        private void minmax_Click(object sender, RoutedEventArgs e)
+        {
+            MinMaxDialog minmaxDialog = new MinMaxDialog(lowerBond.Content.ToString(), upperBond.Content.ToString());
+            if (minmaxDialog.ShowDialog() == true)
+            {
+                if (_imageData.Count>0)
+                {
+                    _imageData[fileNameBox.SelectedIndex].minIntensity = Convert.ToDouble(minmaxDialog.MinScale);
+                    _imageData[fileNameBox.SelectedIndex].maxIntensity = Convert.ToDouble(minmaxDialog.MaxScale);
+                    NumSlice = _numSlice;
+                }
+            }
+        }
     }
 
 }
