@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Avalon="clr-namespace:Utils.Avalon" xmlns:local="clr-namespace:BOLD" xmlns:System="clr-namespace:System;assembly=mscorlib" x:Name="window" mc:Ignorable="d" x:Class="BOLD.MainWindow"
         
-        Title="BOLD" Height="350" Width="430" MinWidth="430" MinHeight="350" Icon="Pictures/Logo.png"
+        Title="BOLD" Height="350" Width="452.667" MinWidth="430" MinHeight="350" Icon="Pictures/Logo.png"
         >
     <Window.Resources>
         <Avalon:JScriptConverter x:Key="JScriptConverter"/>
@@ -128,7 +128,7 @@
                 </DockPanel>
             </DockPanel>
             <GroupBox Header="Mouse" DockPanel.Dock="Top" VerticalAlignment="Top">
-                <Grid Height="180" VerticalAlignment="Top" Width="85">
+                <Grid Height="180" VerticalAlignment="Top" Width="120">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>

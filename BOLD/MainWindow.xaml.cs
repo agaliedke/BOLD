@@ -404,8 +404,8 @@ namespace BOLD
                     Convert.ToInt32(selectionBox.Height * _imageData[fileNameBox.SelectedIndex].ySize / image.Height)
                     );
                 var average = _imageData[fileNameBox.SelectedIndex].GetAverage(r, _numSlice);
-                avgImg.Text = (Math.Truncate(average.Item1 * 10) / 10).ToString();
-                stdImg.Text = (Math.Truncate(average.Item2 * 10) / 10).ToString();
+                avgImg.Text = (Math.Truncate(average.Item1 * 1000) / 1000).ToString();
+                stdImg.Text = (Math.Truncate(average.Item2 * 1000) / 1000).ToString();
                 xSize.Text = (Math.Truncate(r.Width * _imageData[fileNameBox.SelectedIndex].xRealSize * 100.0) / 100.0).ToString() +
                     " " + _imageData[fileNameBox.SelectedIndex].realUnit;
                 ySize.Text = (Math.Truncate(r.Height * _imageData[fileNameBox.SelectedIndex].yRealSize * 100.0) / 100.0).ToString() +
