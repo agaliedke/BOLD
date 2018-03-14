@@ -197,7 +197,7 @@ namespace BOLD
         /// <param name="r">Rectangle object with coordinates of the selected region</param>
         /// <param name="i_slice">number of slice.</param>
         /// <returns>Tuple with avarage and standard deviation of the region.</returns>
-        public Tuple<double, double> GetAverage(Int32Rect r, int i_slice)
+        public Tuple<double, double, int> GetAverage(Int32Rect r, int i_slice)
         {
             var avg = 0.0;
             var std = 0.0;
@@ -209,7 +209,7 @@ namespace BOLD
                 }
             avg /= r.Width * r.Height;
             std = Math.Sqrt(std / r.Width / r.Height - avg * avg);
-            return Tuple.Create(avg, std);
+            return Tuple.Create(avg, std, r.Width * r.Height);
         }
         /// <summary>
         /// Summs up two images.

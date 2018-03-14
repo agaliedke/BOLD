@@ -139,6 +139,7 @@
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -151,21 +152,23 @@
                     <TextBlock Text="Statistics" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" TextDecorations="Underline" />
                     <TextBlock Text="Avg:" FontWeight="Bold" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
                     <TextBlock Text="Std:" FontWeight="Bold" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
+                    <TextBlock Text="Pixels:" FontWeight="Bold" Grid.Row="5" HorizontalAlignment="Right" VerticalAlignment="Bottom"  />
                     <TextBox x:Name="avgImg" Grid.Row="3" Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
                     <TextBox x:Name="stdImg" Grid.Row="4"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
-                    <TextBlock Text="Box" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" TextDecorations="Underline" />
-                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="6" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
+                    <TextBox x:Name="noImg" Grid.Row="5"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBlock Text="Box" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" FontWeight="Bold" HorizontalAlignment="Center" TextDecorations="Underline" />
+                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="7" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
                         <Run>c</Run><Run Typography.Variants="Subscript">x</Run><Run>:</Run>
                     </TextBlock>
-                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="7" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
+                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
                         <Run>c</Run><Run Typography.Variants="Subscript">y</Run><Run>:</Run>
                     </TextBlock>
-                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="8" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
+                    <TextBlock FontFamily="Palatino Linotype" Grid.Row="9" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontWeight="Bold" FontSize="16">
                         <Run>c</Run><Run Typography.Variants="Subscript">z</Run><Run>:</Run>
                     </TextBlock>
-                    <TextBox x:Name="xSize" Grid.Row="6" Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
-                    <TextBox x:Name="ySize" Grid.Row="7"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
-                    <TextBox x:Name="zSize" Grid.Row="8"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="xSize" Grid.Row="7" Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="ySize" Grid.Row="8"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
+                    <TextBox x:Name="zSize" Grid.Row="9"  Grid.Column="1" IsEnabled="False" Margin="5,0,0,0" />
                 </Grid>
             </GroupBox>
 
