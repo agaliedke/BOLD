@@ -391,16 +391,16 @@ namespace BOLD
             image.ReleaseMouseCapture();
 
             // Hide the drag selection box.
-            selectionBox.Visibility = Visibility.Collapsed;
+            //selectionBox.Visibility = Visibility.Collapsed;
 
             Point mouseUpPos = e.GetPosition(image);
             mouseUpPos = transformMouse(mouseUpPos);
             //
             // The mouse has been released, calculate all related statistics below
             //
-            xPos.Text = Math.Round(mouseUpPos.X).ToString();
-            yPos.Text = Math.Round(mouseUpPos.Y).ToString();
             ImageSlice slice = _imageData[fileNameBox.SelectedIndex];
+            xPos.Text = Math.Round(mouseUpPos.X * slice.xSize / image.Width).ToString();
+            yPos.Text = Math.Round(mouseUpPos.Y * slice.ySize / image.Height).ToString();
             if (selectionBox.Width>0 && selectionBox.Height>0)
             {
                 var r = new Int32Rect(
