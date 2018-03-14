@@ -268,10 +268,15 @@ namespace BOLD
                 if (_imageData.Count == 0)
                     return;
                 // insert image to image control
-                image.Source = _imageData[fileNameBox.SelectedIndex].GetImage(_numSlice - 1, Convert.ToInt32(getZeroPointSlider()), color_scale.Fill as LinearGradientBrush);
+                ImageSlice slice = _imageData[fileNameBox.SelectedIndex];
+                image.Source = slice.GetImage(_numSlice - 1, Convert.ToInt32(getZeroPointSlider()), color_scale.Fill as LinearGradientBrush);
                 // resize if needed
                 if (resize.IsChecked ?? true)
-                    image.Source = new CroppedBitmap(image.Source as BitmapSource, _imageData[fileNameBox.SelectedIndex].selection);
+                {
+                    Int32Rect resizedSelection = new Int32Rect(slice.selection.Y, slice.selection.X, slice.selection.Height, slice.selection.Width);
+                    image.Source = new CroppedBitmap(image.Source as BitmapSource, resizedSelection);
+                }
+                _checkedResize = value;
             }
         }
         private void resize_Checked(object sender, RoutedEventArgs e)
@@ -395,23 +400,31 @@ namespace BOLD
             //
             xPos.Text = Math.Round(mouseUpPos.X).ToString();
             yPos.Text = Math.Round(mouseUpPos.Y).ToString();
+            ImageSlice slice = _imageData[fileNameBox.SelectedIndex];
             if (selectionBox.Width>0 && selectionBox.Height>0)
             {
                 var r = new Int32Rect(
-                    Convert.ToInt32(Canvas.GetLeft(selectionBox) * _imageData[fileNameBox.SelectedIndex].xSize / image.Width),
-                    Convert.ToInt32(Canvas.GetTop(selectionBox) * _imageData[fileNameBox.SelectedIndex].ySize / image.Height),
-                    Convert.ToInt32(selectionBox.Width * _imageData[fileNameBox.SelectedIndex].xSize / image.Width),
-                    Convert.ToInt32(selectionBox.Height * _imageData[fileNameBox.SelectedIndex].ySize / image.Height)
+                    Convert.ToInt32(Canvas.GetLeft(selectionBox) * slice.xSize / image.Width),
+                    Convert.ToInt32(Canvas.GetTop(selectionBox) * slice.ySize / image.Height),
+                    Convert.ToInt32(selectionBox.Width * slice.xSize / image.Width),
+                    Convert.ToInt32(selectionBox.Height * slice.ySize / image.Height)
                     );
-                var average = _imageData[fileNameBox.SelectedIndex].GetAverage(r, _numSlice);
+                if (CheckedResize)
+                {
+                    r.Width = Convert.ToInt32(r.Width * slice.selection.Width / slice.xSize);
+                    r.Height = Convert.ToInt32(r.Height * slice.selection.Height / slice.ySize);
+                    r.X = Convert.ToInt32(slice.selection.X + r.Width);
+                    r.Y = Convert.ToInt32(slice.selection.Y + r.Height);
+                }
+                var average = slice.GetAverage(r, _numSlice);
                 avgImg.Text = (Math.Truncate(average.Item1 * 1000) / 1000).ToString();
                 stdImg.Text = (Math.Truncate(average.Item2 * 1000) / 1000).ToString();
                 noImg.Text = average.Item3.ToString();
-                xSize.Text = (Math.Truncate(r.Width * _imageData[fileNameBox.SelectedIndex].xRealSize * 100.0) / 100.0).ToString() +
-                    " " + _imageData[fileNameBox.SelectedIndex].realUnit;
-                ySize.Text = (Math.Truncate(r.Height * _imageData[fileNameBox.SelectedIndex].yRealSize * 100.0) / 100.0).ToString() +
-                    " " + _imageData[fileNameBox.SelectedIndex].realUnit;
-                zSize.Text = _imageData[fileNameBox.SelectedIndex].zRealSize.ToString() + " " + _imageData[fileNameBox.SelectedIndex].realUnit;
+                xSize.Text = (Math.Truncate(r.Width * slice.xRealSize * 100.0) / 100.0).ToString() +
+                    " " + slice.realUnit;
+                ySize.Text = (Math.Truncate(r.Height * slice.yRealSize * 100.0) / 100.0).ToString() +
+                    " " + slice.realUnit;
+                zSize.Text = slice.zRealSize.ToString() + " " + slice.realUnit;
             }
         }
 

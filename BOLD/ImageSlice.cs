@@ -132,7 +132,7 @@ namespace BOLD
                 slice_index++;
             } while (minX == maxX && minY == maxY && slice_index<zSize+1);
 
-            selection = new Int32Rect(minY, minX, maxY - minY, maxX - minX);
+            selection = new Int32Rect(minX, minY, maxX - minX, maxY - minY);
 
         }
         /// <summary>
