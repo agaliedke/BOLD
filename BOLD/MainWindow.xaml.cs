@@ -226,6 +226,8 @@ namespace BOLD
                     //color_scale_gray.Visibility = Visibility.Collapsed;
                     zeroBondSlider.Visibility = Visibility.Visible;
                 }
+                statistics(_imageData[fileNameBox.SelectedIndex]);
+
             }
         }
         private void cmdUp_Click(object sender, RoutedEventArgs e)
@@ -401,7 +403,12 @@ namespace BOLD
             ImageSlice slice = _imageData[fileNameBox.SelectedIndex];
             xPos.Text = Math.Round(mouseUpPos.X * slice.xSize / image.Width).ToString();
             yPos.Text = Math.Round(mouseUpPos.Y * slice.ySize / image.Height).ToString();
-            if (selectionBox.Width>0 && selectionBox.Height>0)
+            statistics(slice);
+        }
+
+        private void statistics(ImageSlice slice)
+        {
+            if (selectionBox.Width > 0 && selectionBox.Height > 0)
             {
                 var r = new Int32Rect(
                     Convert.ToInt32(Canvas.GetLeft(selectionBox) * slice.xSize / image.Width),
@@ -550,6 +557,7 @@ namespace BOLD
             AddImage(slice, slice.sliceFileName);
             activate_deactivate_Buttons();
 
+            statistics(slice);
         }
 
         private void difference_ClickABA(object sender, RoutedEventArgs e)
@@ -558,6 +566,7 @@ namespace BOLD
             AddImage(slice, slice.sliceFileName);
             activate_deactivate_Buttons();
 
+            statistics(slice);
         }
 
         private void minmax_Click(object sender, RoutedEventArgs e)
