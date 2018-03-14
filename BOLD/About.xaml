@@ -35,15 +35,9 @@
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Release:"/>
             <TextBlock Grid.Row="1" Grid.Column="1" Text="January 2016" TextWrapping="Wrap" />
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Authors:"/>
-            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap">
-                Agnieszka Boś-Liedke <LineBreak/>
-                Bartosz Liedke
-            </TextBlock>
+            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" Text="Agnieszka Boś-Liedke"/>
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Contacts:"/>
-            <TextBlock Grid.Row="3" Grid.Column="1" TextWrapping="Wrap">
-                agnieszkaboss@gmail.com <LineBreak/>
-                liedkeb@gmail.com
-            </TextBlock>
+            <TextBlock Grid.Row="3" Grid.Column="1" TextWrapping="Wrap" Text="agnieszkaboss@gmail.com"/>
             <Button x:Name="ok" Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="60" Height="20" Content="OK" Click="ok_Click"/>
 
 
