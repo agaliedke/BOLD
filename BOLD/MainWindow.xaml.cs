@@ -112,6 +112,7 @@ namespace BOLD
 
             txtNum.Text = "0";
         }
+
         private void save_As_Click(object sender, RoutedEventArgs e)
         {
             if (fileNameBox.SelectedIndex == -1)
@@ -123,6 +124,7 @@ namespace BOLD
                 _imageData[fileNameBox.SelectedIndex].SaveImage(saveFileDialog.FileName);
             }
         }
+
         private void save_PNG_Click(object sender, RoutedEventArgs e)
         {
             if (fileNameBox.SelectedIndex == -1)
@@ -138,6 +140,10 @@ namespace BOLD
                     encoder.Save(fileStream);
                 }
             }
+        }
+
+        private void save_Statistics_Click(object sender, RoutedEventArgs e)
+        {
         }
 
         private void about_Click(object sender, RoutedEventArgs e)

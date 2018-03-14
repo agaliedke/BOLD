@@ -25,6 +25,7 @@
                 <Separator />
                 <MenuItem Header="_Save As..." Click="save_As_Click"/>
                 <MenuItem Header="E_xport PNG..." Click="save_PNG_Click"/>
+                <MenuItem Header="E_xport Statistics..." Click="save_Statistics_Click"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="exit_Click" />
 
