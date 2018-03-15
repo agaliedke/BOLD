@@ -144,6 +144,33 @@ namespace BOLD
 
         private void save_Statistics_Click(object sender, RoutedEventArgs e)
         {
+            if (fileNameBox.SelectedIndex == -1)
+                throw new System.Exception("No image loaded, cannot export!");
+
+            if (selectionBox.Visibility != Visibility.Visible)
+                throw new System.Exception("No selection availible!");
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "TXT files (*.TXT)|*.txt|All files (*.*)|*.*";
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                using (var fileStream = new StreamWriter(saveFileDialog.FileName))
+                {
+                    ImageSlice slices = _imageData[fileNameBox.SelectedIndex];
+                    fileStream.WriteLine("Slice\tAvarage\tStdDev\t#Points\tsizeX({0})\tsizeY({0})\tsizeZ({0})", slices.realUnit);
+                    for (int i = 1; i <= slices.zSize; i++)
+                    {
+
+                        var r = convertSelectionToRect(slices);
+                        var stats = slices.GetStatistics(r, i);
+                        var dim = slices.GetDimensions(r);
+                        fileStream.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t", i,
+                            stats.Item1, stats.Item2, stats.Item3,
+                            dim.Item1, dim.Item2, dim.Item3);
+                    }
+                }
+            }
         }
 
         private void about_Click(object sender, RoutedEventArgs e)
@@ -416,31 +443,40 @@ namespace BOLD
         {
             if (selectionBox.Width > 0 && selectionBox.Height > 0)
             {
-                var r = new Int32Rect(
-                    Convert.ToInt32(Canvas.GetLeft(selectionBox) * slice.xSize / image.Width),
-                    Convert.ToInt32(Canvas.GetTop(selectionBox) * slice.ySize / image.Height),
-                    Convert.ToInt32(selectionBox.Width * slice.xSize / image.Width),
-                    Convert.ToInt32(selectionBox.Height * slice.ySize / image.Height)
-                    );
-                if (CheckedResize)
-                {
-                    r.Width = Convert.ToInt32(r.Width * slice.selection.Width / slice.xSize);
-                    r.Height = Convert.ToInt32(r.Height * slice.selection.Height / slice.ySize);
-                    r.X = Convert.ToInt32(slice.selection.X + r.Width);
-                    r.Y = Convert.ToInt32(slice.selection.Y + r.Height);
-                }
-                var average = slice.GetAverage(r, _numSlice);
-                avgImg.Text = (Math.Truncate(average.Item1 * 1000) / 1000).ToString();
-                stdImg.Text = (Math.Truncate(average.Item2 * 1000) / 1000).ToString();
-                noImg.Text = average.Item3.ToString();
-                xSize.Text = (Math.Truncate(r.Width * slice.xRealSize * 100.0) / 100.0).ToString() +
+                var r = convertSelectionToRect(slice);
+                var stats = slice.GetStatistics(r, _numSlice);
+                var dim = slice.GetDimensions(r);
+
+                avgImg.Text = (Math.Truncate(stats.Item1 * 1000) / 1000).ToString();
+                stdImg.Text = (Math.Truncate(stats.Item2 * 1000) / 1000).ToString();
+                noImg.Text = stats.Item3.ToString();
+
+                xSize.Text = (Math.Truncate(dim.Item1 * 100.0) / 100.0).ToString() +
                     " " + slice.realUnit;
-                ySize.Text = (Math.Truncate(r.Height * slice.yRealSize * 100.0) / 100.0).ToString() +
+                ySize.Text = (Math.Truncate(dim.Item2 * 100.0) / 100.0).ToString() +
                     " " + slice.realUnit;
-                zSize.Text = slice.zRealSize.ToString() + " " + slice.realUnit;
+                zSize.Text = dim.Item3.ToString() + " " + slice.realUnit;
             }
         }
 
+        private Int32Rect convertSelectionToRect(ImageSlice slice)
+        {
+            var r = new Int32Rect(
+                Convert.ToInt32(Canvas.GetLeft(selectionBox) * slice.xSize / image.Width),
+                Convert.ToInt32(Canvas.GetTop(selectionBox) * slice.ySize / image.Height),
+                Convert.ToInt32(selectionBox.Width * slice.xSize / image.Width),
+                Convert.ToInt32(selectionBox.Height * slice.ySize / image.Height)
+            );
+            if (CheckedResize)
+            {
+                r.Width = Convert.ToInt32(r.Width * slice.selection.Width / slice.xSize);
+                r.Height = Convert.ToInt32(r.Height * slice.selection.Height / slice.ySize);
+                r.X = Convert.ToInt32(slice.selection.X + r.Width);
+                r.Y = Convert.ToInt32(slice.selection.Y + r.Height);
+            }
+
+            return r;
+        }
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             if (mouseDown)
